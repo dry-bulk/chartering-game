@@ -137,6 +137,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1
     </div>
   </div>
 
+  <!-- 難易度選択 -->
+  <div class="card" style="margin-bottom:1rem">
+    <div style="font-size:13px;font-weight:600;margin-bottom:.55rem">難易度を選ぶ</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="diff-selector">
+      <div onclick="APP.setDiff('easy')" id="diff-easy" style="border:2px solid #1D9E75;border-radius:9px;padding:.55rem .5rem;text-align:center;cursor:pointer;background:#E1F5EE">
+        <div style="font-size:13px;font-weight:600;color:#085041;margin-bottom:2px">🟢 かんたん</div>
+        <div style="font-size:10px;color:#0F6E56">競合が遅い<br>カーゴ多め<br>初心者向け</div>
+      </div>
+      <div onclick="APP.setDiff('normal')" id="diff-normal" style="border:2px solid #185FA5;border-radius:9px;padding:.55rem .5rem;text-align:center;cursor:pointer;background:#E6F1FB">
+        <div style="font-size:13px;font-weight:600;color:#0C447C;margin-bottom:2px">🔵 ふつう</div>
+        <div style="font-size:10px;color:#185FA5">標準設定<br>バランス型<br>おすすめ</div>
+      </div>
+      <div onclick="APP.setDiff('hard')" id="diff-hard" style="border:1.5px solid rgba(0,0,0,.12);border-radius:9px;padding:.55rem .5rem;text-align:center;cursor:pointer;background:#f1efe8">
+        <div style="font-size:13px;font-weight:600;color:#791F1F;margin-bottom:2px">🔴 むずかしい</div>
+        <div style="font-size:10px;color:#A32D2D">競合が激しい<br>カーゴ少なめ<br>上級者向け</div>
+      </div>
+    </div>
+    <div id="diff-desc" style="margin-top:.5rem;font-size:11px;color:#888;text-align:center">難易度「ふつう」が選択されています</div>
+  </div>
+
   <div style="text-align:center;margin-bottom:.75rem">
     <button class="btn-start" onclick="APP.startGame()">ゲームスタート →</button>
   </div>
@@ -204,15 +224,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1
   <!-- 地図 -->
   <div class="card" style="margin-bottom:5px;padding:.45rem .8rem">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem">
-      <div class="sec" style="margin-bottom:0">航路マップ</div>
+      <div class="sec" style="margin-bottom:0">航路マップ <span style="font-size:9px;color:#888;font-weight:400">（スマホ：横スクロール可）</span></div>
       <div style="display:flex;gap:5px">
         <span style="display:flex;align-items:center;gap:2px;font-size:9px;color:#888"><svg width="7" height="7"><circle cx="3.5" cy="3.5" r="3" fill="#185FA5"/></svg>積み</span>
         <span style="display:flex;align-items:center;gap:2px;font-size:9px;color:#888"><svg width="7" height="7"><circle cx="3.5" cy="3.5" r="3" fill="#1D9E75"/></svg>揚げ</span>
         <span style="display:flex;align-items:center;gap:2px;font-size:9px;color:#888"><svg width="14" height="7"><line x1="0" y1="3.5" x2="14" y2="3.5" stroke="#E24B4A" stroke-width="1.3" stroke-dasharray="3,2"/></svg>バラスト</span>
       </div>
     </div>
-    <div style="background:#b8d8f0;border-radius:5px;overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch">
-      <svg viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;min-width:320px">
+    <div style="background:#b8d8f0;border-radius:5px;overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;cursor:grab">
+      <svg viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;min-width:520px">
         <rect width="860" height="340" fill="#b8d8f0"/>
         <path d="M25,42 L52,32 L82,26 L112,22 L144,24 L162,34 L168,46 L163,62 L155,78 L157,96 L152,112 L140,124 L127,134 L113,144 L102,156 L92,168 L82,180 L70,186 L57,176 L45,162 L36,144 L28,122 L22,100 L22,76 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.5"/>
         <path d="M112,22 L140,8 L168,4 L184,10 L174,24 L162,34 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
@@ -369,12 +389,39 @@ var MKT_NAMES=["BLUE ATLAS","IRON DUCHESS","CORAL QUEEN","STAR HORIZON","TITAN W
 var COLORS=["#185FA5","#0F6E56","#854F0B","#993C1D","#534AB7","#993556","#3B6D11","#A32D2D","#0C447C","#085041","#633806","#3C3489"];
 var PORT_KEYS=Object.keys(PORTS);
 var RIVAL_NAMES=["競合A社","競合B社","競合C社","競合D社","ライバル商社"];
-var EVENTS=[{type:"up",title:"中国鉄鋼生産急増",desc:"インフラ投資。需要急騰。"},{type:"up",title:"欧州エネルギー危機",desc:"石炭備蓄増強。運賃急上昇。"},{type:"up",title:"南米穀物豊作",desc:"輸出向け船腹需要増加。"},{type:"up",title:"インド石炭輸入拡大",desc:"電力不足対策。アジア運賃上昇。"},{type:"up",title:"燃料価格安定",desc:"運航コスト改善。",fuelDelta:-80},{type:"down",title:"中国景気減速",desc:"鉄鋼・石炭需要鈍化。"},{type:"down",title:"パナマ運河渇水",desc:"通航制限。需要低下。"},{type:"down",title:"欧州景気後退",desc:"輸入需要低下。"},{type:"down",title:"燃料価格急騰",desc:"運航コスト増加。",fuelDelta:120},{type:"none",title:"",desc:""},{type:"none",title:"",desc:""},{type:"none",title:"",desc:""}];
+var EVENTS=[
+  // 通常上昇
+  {type:"up",  mag:"normal", title:"中国鉄鋼生産急増",    desc:"インフラ投資発表。需要急騰。",             bdiFactor:1.0},
+  {type:"up",  mag:"normal", title:"欧州エネルギー危機",   desc:"石炭備蓄増強。運賃急上昇。",              bdiFactor:1.0},
+  {type:"up",  mag:"normal", title:"南米穀物豊作",         desc:"輸出向け船腹需要増加。",                  bdiFactor:1.0},
+  {type:"up",  mag:"normal", title:"インド石炭輸入拡大",   desc:"電力不足対策。アジア運賃上昇。",          bdiFactor:1.0},
+  {type:"up",  mag:"normal", title:"燃料価格安定",          desc:"運航コスト改善。",                       fuelDelta:-80, bdiFactor:0.5},
+  // 大幅上昇（ボーナスイベント）
+  {type:"up",  mag:"big",    title:"🚀 世界同時インフラ投資", desc:"G7全加盟国が大型公共事業を発表！BDIが急騰。用船料が跳ね上がる。", bdiFactor:2.2},
+  {type:"up",  mag:"big",    title:"🚀 中東産油国の石炭輸入急増", desc:"脱炭素政策の反動で石炭需要が爆発。ドライバルク市場が沸騰。", bdiFactor:2.0},
+  {type:"up",  mag:"big",    title:"🚀 スエズ運河封鎖",       desc:"大型船が座礁。回り道で船腹が一気に不足。用船料が歴史的高値に。", bdiFactor:1.8, fuelDelta:60},
+  {type:"up",  mag:"big",    title:"🚀 世界的異常気象・穀物危機", desc:"北米・南米で同時不作。食料安保のため各国が緊急輸入を発動。", bdiFactor:1.9},
+  // 通常下落
+  {type:"down",mag:"normal", title:"中国景気減速",           desc:"PMI大幅悪化。鉄鋼・石炭需要鈍化。",       bdiFactor:1.0},
+  {type:"down",mag:"normal", title:"パナマ運河渇水",          desc:"通航制限。需要低下。",                   bdiFactor:1.0},
+  {type:"down",mag:"normal", title:"欧州景気後退",            desc:"輸入需要低下。",                         bdiFactor:1.0},
+  {type:"down",mag:"normal", title:"燃料価格急騰",            desc:"運航コスト増加。",                       fuelDelta:120, bdiFactor:0.5},
+  // 大暴落（ピンチイベント）
+  {type:"down",mag:"big",    title:"💥 中国不動産バブル崩壊",  desc:"恒大ショック再来。鉄鉱石・石炭需要が壊滅的に減少。BDIが歴史的暴落。", bdiFactor:2.2},
+  {type:"down",mag:"big",    title:"💥 世界金融危機勃発",       desc:"リーマン級の信用収縮。荷主が契約をキャンセル。市場が凍りつく。", bdiFactor:2.0},
+  {type:"down",mag:"big",    title:"💥 燃料価格が2倍に急騰",    desc:"中東紛争で原油が暴騰。燃料費が激増し採算ラインが大幅上昇。",   fuelDelta:280, bdiFactor:0.3},
+  {type:"down",mag:"big",    title:"💥 世界的港湾ストライキ",   desc:"主要港が操業停止。荷主が輸送をキャンセル。運賃が底割れ。",    bdiFactor:2.1},
+  // 無変化
+  {type:"none",mag:"normal", title:"",desc:""},
+  {type:"none",mag:"normal", title:"",desc:""},
+  {type:"none",mag:"normal", title:"",desc:""},
+  {type:"none",mag:"normal", title:"",desc:""}
+];
 var BASE_DATE=new Date(2025,0,1);
 function addDays(d,n){var r=new Date(d);r.setDate(r.getDate()+n);return r;}
 function fmtD(d){return (d.getMonth()+1)+'/'+(d.getDate());}
 function fmtDL(d){return (d.getMonth()+1)+'月'+d.getDate()+'日';}
-var S={round:1,maxRound:6,profit:0,bdi:1200,cash:50e6,deals:0,fuelPrice:600,curDate:new Date(BASE_DATE),mktShips:[],nextId:1,nextCol:0,activeCharters:[],cargoes:[],selMktShip:null,negPeriod:1,hireOffer:0,selActiveShip:null,selCargo:null,caFreightOffer:0,logs:[],lastEvent:null,doneList:[],currentTab:'charter',timerSec:300,timerActive:false,timerHandle:null,rivalSchedule:[],rivalLog:[]};
+var S={round:1,maxRound:6,profit:0,bdi:1200,cash:50e6,deals:0,fuelPrice:600,curDate:new Date(BASE_DATE),mktShips:[],nextId:1,nextCol:0,activeCharters:[],cargoes:[],selMktShip:null,negPeriod:1,hireOffer:0,selActiveShip:null,selCargo:null,caFreightOffer:0,logs:[],lastEvent:null,doneList:[],currentTab:'charter',timerSec:300,timerActive:false,timerHandle:null,rivalSchedule:[],rivalLog:[],difficulty:'normal'};
 function fmt(v){var a=Math.abs(v),s=v<0?'-':'+';if(a>=1e6)return s+'$'+(a/1e6).toFixed(1)+'M';return s+'$'+Math.round(a/1000)+'K';}
 function fmtC(v){return v>=1e6?'$'+(v/1e6).toFixed(1)+'M':'$'+Math.round(v/1000)+'K';}
 function lbl(s){return '#'+s.id;}
@@ -390,15 +437,73 @@ function probLbl(p){if(p>=90)return{t:"ほぼ確実("+p+"%)",bg:"#E1F5EE",c:"#08
 function schedChk(pos,ti,cargo){var bd=bdDays(pos,ti,cargo.from);var arr=addDays(S.curDate,bd);return{bd:bd,arr:arr,ok:arr<=cargo.laycanEnd};}
 function addLog(m){S.logs.unshift(m);if(S.logs.length>80)S.logs.pop();var h='';for(var i=0;i<S.logs.length;i++)h+='<div>'+S.logs[i]+'</div>';document.getElementById('logbox').innerHTML=h;}
 function addDone(m){S.doneList.unshift(m);if(S.doneList.length>20)S.doneList.pop();var h='';for(var i=0;i<S.doneList.length;i++)h+='<div style="padding:.15rem 0;border-bottom:0.5px solid rgba(0,0,0,0.08)">'+S.doneList[i]+'</div>';document.getElementById('done-list').innerHTML=h;}
-function buildSched(){var sc=[];for(var t=148;t>=20;t-=18)if(Math.random()<0.28)sc.push({at:t,type:'cargo',n:1});for(var t=116;t>=60;t-=12)if(Math.random()<0.68)sc.push({at:t,type:'cargo',n:1});for(var t=56;t>=30;t-=8)if(Math.random()<0.82)sc.push({at:t,type:'cargo',n:Math.random()<0.35?2:1});for(var t=28;t>=5;t-=4)sc.push({at:t,type:'cargo',n:Math.random()<0.5?2:1});for(var t=120;t>=40;t-=20)if(Math.random()<0.45)sc.push({at:t,type:'ship',n:1});for(var t=38;t>=10;t-=12)if(Math.random()<0.65)sc.push({at:t,type:'ship',n:1});return sc;}
+function buildSched(){
+  var sc=[];
+  var d=S.difficulty;
+  // カーゴ奪取スケジュール（難易度で調整）
+  var cargoStart = d==='easy'?90:d==='hard'?160:148;
+  var cargoProb1 = d==='easy'?0.15:d==='hard'?0.40:0.28;
+  var cargoProb2 = d==='easy'?0.40:d==='hard'?0.85:0.68;
+  var cargoProb3 = d==='easy'?0.60:d==='hard'?0.95:0.82;
+  for(var t=cargoStart;t>=20;t-=18)if(Math.random()<cargoProb1)sc.push({at:t,type:'cargo',n:1});
+  for(var t=116;t>=60;t-=12)if(Math.random()<cargoProb2)sc.push({at:t,type:'cargo',n:1});
+  for(var t=56;t>=30;t-=8)if(Math.random()<cargoProb3)sc.push({at:t,type:'cargo',n:Math.random()<(d==='hard'?0.6:0.35)?2:1});
+  for(var t=28;t>=5;t-=4)sc.push({at:t,type:'cargo',n:d==='easy'?1:Math.random()<0.5?2:1});
+  // 用船市場奪取
+  var shipStart = d==='easy'?60:d==='hard'?150:120;
+  var shipProb = d==='easy'?0.25:d==='hard'?0.65:0.45;
+  for(var t=shipStart;t>=40;t-=20)if(Math.random()<shipProb)sc.push({at:t,type:'ship',n:1});
+  for(var t=38;t>=10;t-=12)if(Math.random()<(d==='easy'?0.35:d==='hard'?0.85:0.65))sc.push({at:t,type:'ship',n:1});
+  return sc;
+}
 function startTimer(){S.timerSec=300;S.timerActive=true;S.rivalSchedule=buildSched();S.rivalLog=[];updateTimerUI();S.timerHandle=setInterval(function(){if(!S.timerActive)return;S.timerSec--;updateTimerUI();var sc=S.rivalSchedule;for(var i=sc.length-1;i>=0;i--){if(S.timerSec<=sc[i].at){if(sc[i].type==='cargo')rivalStealCargo(sc[i].n);else rivalStealShip(sc[i].n);sc.splice(i,1);}}if(S.timerSec<=0){S.timerActive=false;clearInterval(S.timerHandle);addLog('⏰ 5分経過 — 強制終了');APP.nextRound();}},1000);}
 function updateTimerUI(){var sec=S.timerSec,mm=Math.floor(sec/60),ss=sec%60;document.getElementById('timer-disp').textContent=mm+':'+(ss<10?'0':'')+ss;document.getElementById('timer-disp').style.color=sec<=30?'#E24B4A':sec<=60?'#BA7517':'#1a1a1a';var pct=sec/300*100,col=sec>120?'#1D9E75':sec>60?'#BA7517':'#E24B4A';var bar=document.getElementById('timer-bar');bar.style.width=pct+'%';bar.style.background=col;var pl=sec>180?'静観中':sec>60?'競合動き出した！':sec>30?'積極的に成約中！':'急いで！';var lblEl=document.getElementById('timer-phase-lbl');lblEl.textContent=pl;lblEl.style.color=sec<=60?'#E24B4A':'#888';document.getElementById('rival-log-area').innerHTML=S.rivalLog.slice(-2).map(function(m){return'<div class="rival-log">'+m+'</div>';}).join('');}
 function rivalStealCargo(n){var cands=[];for(var i=0;i<S.cargoes.length;i++){var c=S.cargoes[i];if(!c.taken&&!c.rivalTaken)cands.push(c);}cands.sort(function(a,b){return b.rate*b.qty-a.rate*a.qty;});var k=Math.min(n,cands.length);for(var i=0;i<k;i++){cands[i].rivalTaken=true;var msg=RIVAL_NAMES[Math.floor(Math.random()*RIVAL_NAMES.length)]+'が '+cands[i].cargo+'('+cands[i].from+'→'+cands[i].to+')を成約';S.rivalLog.push(msg);addLog('⚡ '+msg);}renderCargoes();renderMap();}
 function rivalStealShip(n){var avail=[];for(var i=0;i<S.mktShips.length;i++){var s=S.mktShips[i];if(!s.booked&&!s.rivalBooked)avail.push(s);}if(!avail.length)return;avail.sort(function(){return Math.random()-.5;});var k=Math.min(n,avail.length);for(var i=0;i<k;i++){avail[i].rivalBooked=true;var msg=RIVAL_NAMES[Math.floor(Math.random()*RIVAL_NAMES.length)]+'が '+avail[i].name+'を用船';S.rivalLog.push(msg);addLog('⚡ '+msg);}renderCharter();}
 function genMktShips(){S.mktShips=[];var n=5+Math.floor(Math.random()*2),used=[];for(var i=0;i<n;i++){var ni=Math.floor(Math.random()*MKT_NAMES.length);while(used.indexOf(ni)>=0)ni=Math.floor(Math.random()*MKT_NAMES.length);used.push(ni);var ti=Math.floor(Math.random()*3),pos=PORT_KEYS[Math.floor(Math.random()*PORT_KEYS.length)];var trueRate=Math.round((STYPES[ti].fuelTDay*30*S.fuelPrice*(0.8+Math.random()*.5)/30+3000)/500)*500;var isBroker=Math.random()<0.20;var ownerRate=isBroker?Math.round(trueRate*(1.05+Math.random()*.10)/500)*500:trueRate;S.mktShips.push({id:S.nextId++,name:MKT_NAMES[ni],ti:ti,pos:pos,trueOwnerRate:trueRate,ownerRate:ownerRate,isBroker:isBroker,booked:false,rivalBooked:false,colorIdx:S.nextCol++});}}
 function genCargoes(){var pool=[];for(var i=0;i<CTPL.length;i++)pool.push(i);pool.sort(function(){return Math.random()-.5;});S.cargoes=[];var num=6+Math.floor(Math.random()*3);for(var j=0;j<num;j++){var t=CTPL[pool[j]];var qty=Math.round(t.minDWT*(0.85+Math.random()*.3)/5)*5;var rate=Math.round(t.base*(S.bdi/1200)*(0.85+Math.random()*.3));var so=5+Math.floor(Math.random()*16),wn=7+Math.floor(Math.random()*8);var ls=addDays(S.curDate,so),le=addDays(ls,wn);S.cargoes.push({id:j+1,cargo:t.cargo,from:t.from,to:t.to,days:t.days,minDWT:t.minDWT,qty:qty,rate:rate,taken:false,rivalTaken:false,laycanStart:ls,laycanEnd:le});}}
-function rollEvent(){var ev=EVENTS[Math.floor(Math.random()*EVENTS.length)];S.lastEvent=ev;if(ev.type==='none')return;var mag=(ev.type==='up'?1:-1)*Math.round(200+Math.random()*300);S.bdi=Math.max(400,Math.min(4000,S.bdi+mag));if(ev.fuelDelta)S.fuelPrice=Math.max(300,Math.min(1200,S.fuelPrice+ev.fuelDelta));if(ev.type==='up')for(var i=0;i<S.mktShips.length;i++)S.mktShips[i].ownerRate=Math.round(S.mktShips[i].ownerRate*1.08/500)*500;if(ev.type==='down')for(var i=0;i<S.mktShips.length;i++)S.mktShips[i].ownerRate=Math.max(3000,Math.round(S.mktShips[i].ownerRate*0.93/500)*500);}
-function renderEvent(){var el=document.getElementById('event-area'),ev=S.lastEvent;if(!ev||ev.type==='none'){el.innerHTML='';return;}var up=ev.type==='up';el.innerHTML='<div style="border-radius:7px;padding:.28rem .55rem;font-size:10px;background:'+(up?'#E1F5EE':'#FCEBEB')+';color:'+(up?'#085041':'#791F1F')+'"><b>'+(up?'▲':'▼')+' '+ev.title+'</b> — '+ev.desc+'</div>';}
+function rollEvent(){
+  // 難易度に応じてイベントプールを調整
+  var pool = EVENTS.filter(function(e){
+    if(S.difficulty==='easy') return e.mag!=='big' || e.type==='up'; // easy: 大暴落なし
+    if(S.difficulty==='hard') return e.mag!=='big' || e.type==='down'; // hard: 大急騰なし
+    return true; // normal: すべて
+  });
+  var ev=pool[Math.floor(Math.random()*pool.length)];
+  S.lastEvent=ev;
+  if(ev.type==='none')return;
+  var baseMag=Math.round(200+Math.random()*300);
+  var factor=ev.bdiFactor||1.0;
+  var mag=Math.round(baseMag*factor);
+  if(ev.mag==='big') mag=Math.round(500+Math.random()*800); // 大イベントは500〜1300
+  if(ev.type==='up'){
+    S.bdi=Math.min(5000,S.bdi+mag);
+    for(var i=0;i<S.mktShips.length;i++)S.mktShips[i].ownerRate=Math.round(S.mktShips[i].ownerRate*(ev.mag==='big'?1.25:1.08)/500)*500;
+  } else {
+    S.bdi=Math.max(200,S.bdi-mag);
+    for(var i=0;i<S.mktShips.length;i++)S.mktShips[i].ownerRate=Math.max(2000,Math.round(S.mktShips[i].ownerRate*(ev.mag==='big'?0.72:0.93)/500)*500);
+  }
+  if(ev.fuelDelta)S.fuelPrice=Math.max(200,Math.min(1500,S.fuelPrice+ev.fuelDelta));
+}
+function renderEvent(){
+  var el=document.getElementById('event-area'),ev=S.lastEvent;
+  if(!ev||ev.type==='none'){el.innerHTML='';return;}
+  var up=ev.type==='up';
+  var isBig=ev.mag==='big';
+  var bg=up?(isBig?'#0d2218':'#E1F5EE'):(isBig?'#2d0a0a':'#FCEBEB');
+  var col=up?(isBig?'#3fb950':'#085041'):(isBig?'#ff6b6b':'#791F1F');
+  var border=isBig?('border:1.5px solid '+(up?'#238636':'#E24B4A')+';'):'';
+  var bdiChange=S.bdi;
+  el.innerHTML='<div style="border-radius:8px;padding:.4rem .65rem;font-size:'+(isBig?'11px':'10px')+';background:'+bg+';color:'+col+';'+border+'">'
+    +(isBig?'<div style="font-size:13px;font-weight:700;margin-bottom:2px">':'<b>')
+    +ev.title
+    +(isBig?'</div>':'</b> — ')
+    +(isBig?'<div style="font-size:10px;opacity:.9">':'')
+    +ev.desc
+    +(isBig?'</div>':'')
+    +(isBig?'<div style="font-size:11px;font-weight:600;margin-top:3px">BDI: '+(up?'▲▲ 急騰':'▼▼ 暴落')+' → '+S.bdi.toLocaleString()+'</div>':'')
+    +'</div>';
+}
 function renderMetrics(){var pe=document.getElementById('m-profit');pe.textContent=fmt(S.profit);pe.style.color=S.profit>=0?'#1D9E75':'#E24B4A';document.getElementById('m-bdi').textContent=S.bdi.toLocaleString();document.getElementById('m-fuel').textContent='$'+S.fuelPrice;document.getElementById('m-deals').textContent=S.deals+'件';document.getElementById('m-cash').textContent=fmtC(S.cash);document.getElementById('phase-tag').textContent='R'+S.round+'/'+S.maxRound;document.getElementById('cur-date').textContent=fmtDL(S.curDate);}
 function renderCharter(){var h='';for(var i=0;i<S.mktShips.length;i++){var s=S.mktShips[i],t=STYPES[s.ti],col=COLORS[s.colorIdx%COLORS.length];var unavail=s.booked||s.rivalBooked;var sel=s.id===S.selMktShip;var bg=sel?'background:'+col+'15;':'';var dim=unavail?'opacity:.38;':'';var tagTxt=s.rivalBooked?'競合が用船':s.booked?'用船済':'用船可';var tagBg=s.rivalBooked?'background:#FCEBEB;color:#791F1F':s.booked?'background:#EEEDFE;color:#3C3489':'background:#FAEEDA;color:#633806';h+='<div class="srow" style="'+bg+dim+'" onclick="APP.pickMktShip('+s.id+')"><div style="width:20px;height:20px;border-radius:4px;background:'+col+';display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:#fff;flex-shrink:0">'+lbl(s)+'</div><div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.name+(s.isBroker?'<span class="broker-badge">⚠</span>':'')+'</div><div style="font-size:9px;color:#888">'+t.label+' '+t.dwt+'k | '+s.pos+' | $'+Math.round(s.ownerRate/1000)+'K/日</div></div><span class="tag" style="'+tagBg+'">'+tagTxt+'</span></div>';}document.getElementById('charter-list').innerHTML=h;}
 function renderMyShips(){var el=document.getElementById('myships-list');if(!S.activeCharters.length){el.innerHTML='<div style="font-size:11px;color:#888">用船中の船なし — まず用船市場で船を用船してください</div>';return;}var h='';for(var i=0;i<S.activeCharters.length;i++){var ac=S.activeCharters[i],t=STYPES[ac.ti],col=COLORS[ac.colorIdx%COLORS.length];h+='<div class="aship"><div class="aship-name" style="color:'+col+'">'+ac.name+' <span style="font-size:9px;color:#888">'+t.label+' '+t.dwt+'k</span> <span style="font-size:9px;color:#854F0B">$'+Math.round(ac.hirePerDay/1000)+'K/日 残'+ac.remainRounds+'R</span></div><div style="font-size:9px;color:#888">現在地: '+ac.pos+'</div>';if(ac.status==='delivering'&&ac.cargoInfo){h+='<div class="cargo-slot delivering">▶ '+ac.cargoInfo.cargo+' '+ac.cargoInfo.from+'→'+ac.cargoInfo.to+' R'+ac.cargoInfo.arriveRound+'着予定</div>';}else{h+='<div class="cargo-slot empty" onclick="APP.selectSlot('+ac.id+')">＋ カーゴを割り当てる</div>';}h+='</div>';}el.innerHTML=h;}
@@ -408,7 +513,32 @@ function refreshNegPanel(){var msgEl=document.getElementById('np-msg'),bodyEl=do
 function refreshCargoPanel(){var msgEl=document.getElementById('ca-msg'),bodyEl=document.getElementById('ca-body');function hide(m,err){msgEl.style.display='';msgEl.textContent=m;msgEl.style.color=err?'#E24B4A':'#888';bodyEl.style.display='none';}if(!S.selActiveShip||!S.selCargo){hide(S.selActiveShip?'カーゴ市場でカーゴを選んでください':'用船中の船のスロットをタップしてください',false);return;}var ac=getAC(S.selActiveShip),cargo=getCargo(S.selCargo);if(!ac||!cargo){hide('',false);return;}if(ac.status==='delivering'){hide('この船は現在運送中です。揚げ地到着後に次のカーゴを積めます',true);return;}var t=STYPES[ac.ti];if(t.dwt<cargo.minDWT){hide('DWT不足 — 必要:'+cargo.minDWT+'k / この船:'+t.dwt+'k',true);return;}if(cargo.taken||cargo.rivalTaken){hide('このカーゴは既に成約済みです',true);return;}msgEl.style.display='none';bodyEl.style.display='';var sc=schedChk(ac.pos,ac.ti,cargo);var tot=sc.bd+cargo.days,fuel=fuelVoy(ac.ti,tot),hireCostV=Math.round(ac.hirePerDay*tot);var rev=Math.round(S.caFreightOffer*cargo.qty*1000),margin=rev-hireCostV-fuel;var minFr=Math.ceil((hireCostV+fuel)/(cargo.qty*1000));var fp=freightProb(S.caFreightOffer,cargo.rate),fl=probLbl(fp);var col=COLORS[ac.colorIdx%COLORS.length];document.getElementById('ca-info').innerHTML='<div style="display:flex;align-items:center;gap:5px;margin-bottom:.2rem"><div style="width:16px;height:16px;border-radius:3px;background:'+col+';display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:600;flex-shrink:0">'+lbl(ac)+'</div><b style="font-size:11px">'+ac.name+'</b> × <b>'+cargo.cargo+'</b></div><div style="font-size:9px;color:#888">'+cargo.from+'→'+cargo.to+' | '+cargo.qty+'k t | バラスト '+sc.bd+'日 + 運航'+cargo.days+'日 = 計'+tot+'日</div>';document.getElementById('ca-schedule').innerHTML='<span style="color:'+(sc.ok?'#1D9E75':'#E24B4A')+'">'+(sc.ok?'✓ ':'✗ ')+'到着予定 '+fmtD(sc.arr)+' | laycan '+fmtD(cargo.laycanStart)+'〜'+fmtD(cargo.laycanEnd)+'</span>';document.getElementById('ca-mkt-rate').innerHTML='$'+cargo.rate+'/t';var fi=document.getElementById('ca-freight-input');if(document.activeElement!==fi)fi.value=S.caFreightOffer;document.getElementById('ca-freight-status').innerHTML='<span style="padding:2px 6px;border-radius:5px;font-size:10px;background:'+fl.bg+';color:'+fl.c+'">'+fl.t+'</span>';document.getElementById('ca-calc').innerHTML='<div style="font-size:9px;color:#888;margin-bottom:.18rem">採算ライン $'+minFr+'/t | 用船料コスト $'+Math.round(hireCostV/1000)+'K | 燃料 $'+Math.round(fuel/1000)+'K</div><div class="calc-box"><div class="calc-item"><div class="cl">収入</div><div class="cv" style="color:#185FA5">$'+Math.round(rev/1000)+'K</div></div><div style="color:#888">−</div><div class="calc-item"><div class="cl">用船料</div><div class="cv" style="color:#E24B4A">$'+Math.round(hireCostV/1000)+'K</div></div><div style="color:#888">−</div><div class="calc-item"><div class="cl">燃料</div><div class="cv" style="color:#E24B4A">$'+Math.round(fuel/1000)+'K</div></div><div style="color:#888">=</div><div class="calc-item"><div class="cl">利益</div><div class="cv" style="color:'+(margin>=0?'#1D9E75':'#E24B4A')+'">$'+Math.round(margin/1000)+'K</div></div></div>';}
 function renderAll(){renderEvent();renderMetrics();renderCharter();renderMyShips();renderCargoes();renderMap();}
 return{
-startGame:function(){document.getElementById('screen-start').style.display='none';document.getElementById('screen-game').style.display='';genCargoes();genMktShips();renderAll();addLog('R1開始 — まず用船市場で船をチャーターしよう！');startTimer();},
+startGame:function(){
+  document.getElementById('screen-start').style.display='none';
+  document.getElementById('screen-game').style.display='';
+  // 難易度に応じてカーゴ数調整
+  genCargoes();genMktShips();renderAll();
+  var diffLabel={'easy':'かんたん','normal':'ふつう','hard':'むずかしい'}[S.difficulty];
+  addLog('R1開始 [難易度:'+diffLabel+'] — まず用船市場で船をチャーターしよう！');
+  startTimer();
+},
+setDiff:function(d){
+  S.difficulty=d;
+  var ids=['easy','normal','hard'];
+  var colors={'easy':['#1D9E75','#E1F5EE','#085041'],'normal':['#185FA5','#E6F1FB','#0C447C'],'hard':['#E24B4A','#FCEBEB','#791F1F']};
+  ids.forEach(function(id){
+    var el=document.getElementById('diff-'+id);
+    var active=id===d;
+    var c=colors[id];
+    el.style.border=active?'2.5px solid '+c[0]:'1.5px solid rgba(0,0,0,.12)';
+    el.style.background=active?c[1]:'#f1efe8';
+    el.style.transform=active?'scale(1.03)':'scale(1)';
+  });
+  var descs={'easy':'「かんたん」— 競合の動きが遅く、カーゴも多め。大暴落イベントなし。初心者向け',
+             'normal':'「ふつう」— 標準設定。すべてのイベントが発生。バランス型',
+             'hard':'「むずかしい」— 競合が序盤から動く。カーゴ少なめ。大急騰イベントなし。上級者向け'};
+  document.getElementById('diff-desc').textContent=descs[d];
+},
 showTab:function(tab){S.currentTab=tab;['charter','myships','cargo','neg','cargoassign','rules'].forEach(function(t){var p=document.getElementById('pane-'+t);if(p)p.style.display=tab===t?'':'none';var b=document.getElementById('tab-'+t);if(b)b.className='tab-btn'+(tab===t?' active':'');});if(tab==='neg')refreshNegPanel();if(tab==='cargoassign')refreshCargoPanel();},
 pickMktShip:function(id){var s=getMkt(id);if(!s||s.booked||s.rivalBooked)return;S.selMktShip=(S.selMktShip===id)?null:id;if(S.selMktShip){S.hireOffer=Math.round(s.ownerRate*0.95/500)*500;S.negPeriod=1;}renderAll();if(S.selMktShip)this.showTab('neg');},
 stepPeriod:function(d){S.negPeriod=Math.max(1,Math.min(S.maxRound-S.round+1,S.negPeriod+d));refreshNegPanel();},
