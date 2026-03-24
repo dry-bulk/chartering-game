@@ -1,0 +1,9 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyAmCfvdLCfJh2Ft1u5giII7NGRUY5jLMOM",
+  authDomain: "kaiun-game.firebaseapp.com",
+  databaseURL: "https://kaiun-game-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "kaiun-game",
+  storageBucket: "kaiun-game.firebasestorage.app",
+  messagingSenderId: "1000165668893",
+  appId: "1:1000165668893:web:5e56542149256e8c706ef4"
+};
