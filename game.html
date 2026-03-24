@@ -183,7 +183,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1
 
   <!-- ヘッダー -->
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem">
-    <div style="font-size:13px;font-weight:600">ドライバルク チャータリング</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="APP.goHome()" style="border:0.5px solid rgba(0,0,0,.2);background:#fff;border-radius:8px;padding:.3rem .6rem;font-size:11px;cursor:pointer;color:#888;display:inline-flex;align-items:center;gap:4px;min-height:34px">
+        ← ホーム
+      </button>
+      <div style="font-size:12px;font-weight:600;color:#1a1a1a">🚢 チャータリング</div>
+    </div>
     <div style="display:flex;align-items:center;gap:6px">
       <span style="font-size:10px;color:#888" id="cur-date"></span>
       <span class="tag" style="background:#FAEEDA;color:#633806" id="phase-tag">R1/6</span>
@@ -231,35 +236,66 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1
         <span style="display:flex;align-items:center;gap:2px;font-size:9px;color:#888"><svg width="14" height="7"><line x1="0" y1="3.5" x2="14" y2="3.5" stroke="#E24B4A" stroke-width="1.3" stroke-dasharray="3,2"/></svg>バラスト</span>
       </div>
     </div>
-    <div style="background:#b8d8f0;border-radius:5px;overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch;cursor:grab">
-      <svg viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;min-width:520px">
-        <rect width="860" height="340" fill="#b8d8f0"/>
-        <path d="M25,42 L52,32 L82,26 L112,22 L144,24 L162,34 L168,46 L163,62 L155,78 L157,96 L152,112 L140,124 L127,134 L113,144 L102,156 L92,168 L82,180 L70,186 L57,176 L45,162 L36,144 L28,122 L22,100 L22,76 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.5"/>
-        <path d="M112,22 L140,8 L168,4 L184,10 L174,24 L162,34 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M102,156 L112,168 L108,182 L100,186 L92,168 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M82,180 L92,168 L100,186 L95,198 L88,206 L80,200 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M80,200 L96,194 L114,198 L126,208 L136,224 L142,244 L140,266 L132,288 L120,306 L108,312 L95,306 L83,292 L73,272 L66,250 L66,230 L71,214 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.5"/>
-        <path d="M288,20 L308,12 L328,8 L348,10 L360,18 L361,30 L352,40 L338,48 L322,52 L306,50 L294,42 L288,32 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.5"/>
-        <path d="M328,8 L342,0 L358,2 L366,12 L360,18 L348,10 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M284,42 L296,38 L306,46 L303,58 L291,60 L280,54 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M306,62 L326,56 L350,52 L372,54 L386,62 L392,76 L392,92 L386,110 L378,132 L368,154 L356,176 L342,194 L328,208 L316,214 L304,210 L294,198 L287,180 L285,160 L286,140 L288,120 L290,100 L292,80 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.5"/>
-        <path d="M400,188 L408,178 L415,186 L412,202 L405,206 L398,198 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M418,60 L438,53 L454,56 L460,68 L456,84 L444,94 L430,94 L420,84 L416,72 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M474,56 L494,49 L514,53 L521,68 L518,87 L508,102 L494,112 L480,109 L470,95 L468,78 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.5"/>
-        <path d="M361,18 L401,8 L451,2 L508,0 L564,2 L612,6 L650,12 L670,20 L668,34 L651,44 L620,50 L586,54 L551,56 L516,56 L482,54 L450,48 L418,40 L388,33 L368,28 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.5"/>
-        <path d="M586,54 L618,50 L646,55 L662,65 L668,80 L663,96 L648,108 L628,116 L608,114 L592,103 L583,90 L583,74 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.5"/>
-        <path d="M663,64 L673,60 L680,66 L678,78 L670,81 L663,74 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M692,36 L701,30 L710,34 L711,46 L703,51 L694,46 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M686,50 L696,46 L703,51 L701,61 L692,63 L685,58 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M681,62 L690,59 L696,64 L693,72 L684,72 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M608,114 L626,114 L640,118 L647,130 L642,144 L627,151 L612,148 L604,136 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M626,144 L633,151 L635,164 L630,176 L624,178 L618,168 L619,154 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M608,170 L626,160 L646,164 L650,176 L639,186 L622,188 L608,182 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M637,192 L656,188 L676,190 L682,198 L665,205 L645,202 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M658,146 L680,140 L700,143 L708,155 L706,171 L692,181 L674,180 L658,170 L652,156 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.4"/>
-        <path d="M658,214 L682,204 L710,200 L738,202 L762,210 L780,222 L788,240 L784,262 L773,280 L754,292 L732,298 L708,294 L688,282 L674,264 L666,244 L665,224 Z" fill="#d8cfa8" stroke="#b8ad88" stroke-width="0.5"/>
-        <line x1="410" y1="56" x2="412" y2="70" stroke="#888" stroke-width="1" stroke-dasharray="2,2" opacity=".4"/>
-        <line x1="88" y1="200" x2="85" y2="210" stroke="#888" stroke-width="1" stroke-dasharray="2,2" opacity=".4"/>
+    <div style="background:#1a6ea8;border-radius:5px;overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;min-width:600px">
+        <rect width="1000" height="500" fill="#1a6ea8"/>
+        <!-- 大陸・国土（精細版） -->
+        <!-- 北米 -->
+        <path d="M 28,52 L 48,38 L 72,28 L 96,22 L 118,20 L 140,22 L 158,28 L 170,38 L 175,50 L 172,65 L 165,78 L 160,92 L 162,108 L 158,124 L 148,136 L 136,145 L 124,152 L 112,160 L 100,170 L 90,182 L 80,192 L 70,198 L 58,190 L 46,176 L 36,158 L 28,138 L 22,116 L 20,94 L 22,72 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.6"/>
+        <path d="M 118,20 L 142,8 L 168,4 L 184,8 L 178,20 L 165,28 L 158,28 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.5"/>
+        <path d="M 20,94 L 28,88 L 38,90 L 42,100 L 36,108 L 26,106 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- 中米 -->
+        <path d="M 80,192 L 90,182 L 100,186 L 104,198 L 98,210 L 90,218 L 82,212 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- 南米 -->
+        <path d="M 82,212 L 98,210 L 114,214 L 128,222 L 138,234 L 144,250 L 144,270 L 138,292 L 128,314 L 116,332 L 104,342 L 92,336 L 80,320 L 70,300 L 64,278 L 62,256 L 66,236 L 74,220 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.6"/>
+        <!-- 欧州 -->
+        <path d="M 320,22 L 340,14 L 358,10 L 374,12 L 384,20 L 385,32 L 378,42 L 364,50 L 348,56 L 330,58 L 316,52 L 310,40 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.5"/>
+        <path d="M 358,10 L 372,4 L 386,6 L 392,14 L 386,22 L 376,24 L 366,20 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <path d="M 308,38 L 320,34 L 330,40 L 328,52 L 316,54 L 306,48 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- アフリカ -->
+        <path d="M 316,66 L 336,58 L 362,54 L 390,56 L 406,64 L 412,78 L 412,96 L 406,116 L 396,140 L 382,166 L 366,192 L 350,214 L 334,230 L 320,236 L 308,230 L 298,216 L 292,198 L 290,178 L 292,156 L 296,134 L 300,112 L 304,90 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.6"/>
+        <path d="M 414,210 L 422,200 L 430,208 L 428,224 L 420,228 L 412,220 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- アラビア半島 -->
+        <path d="M 450,68 L 468,60 L 484,62 L 492,74 L 488,92 L 476,104 L 462,106 L 452,96 L 448,80 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.5"/>
+        <!-- インド -->
+        <path d="M 506,66 L 526,58 L 546,62 L 554,76 L 552,98 L 542,118 L 526,132 L 510,128 L 498,114 L 496,94 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.5"/>
+        <!-- ロシア・中央アジア -->
+        <path d="M 386,14 L 430,6 L 480,0 L 540,0 L 600,2 L 650,6 L 692,12 L 714,20 L 715,34 L 698,46 L 668,54 L 632,60 L 596,64 L 558,66 L 520,66 L 482,64 L 448,58 L 418,50 L 398,40 L 388,28 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.6"/>
+        <!-- 中国・東アジア -->
+        <path d="M 620,60 L 652,56 L 678,60 L 696,70 L 702,86 L 697,104 L 680,118 L 658,126 L 636,124 L 617,112 L 609,96 L 611,78 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.5"/>
+        <!-- 朝鮮半島 -->
+        <path d="M 698,70 L 710,66 L 718,72 L 716,86 L 706,90 L 698,84 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- 日本列島 -->
+        <path d="M 726,48 L 736,42 L 746,46 L 748,58 L 740,64 L 730,60 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <path d="M 719,62 L 730,58 L 738,64 L 736,76 L 726,79 L 718,72 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <path d="M 714,76 L 724,72 L 730,78 L 728,88 L 718,90 L 712,84 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- 台湾 -->
+        <path d="M 702,88 L 710,84 L 716,90 L 712,98 L 704,98 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.3"/>
+        <!-- 東南アジア -->
+        <path d="M 638,124 L 658,116 L 676,120 L 684,132 L 680,148 L 666,158 L 650,156 L 639,144 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- マレー半島 -->
+        <path d="M 659,150 L 667,158 L 670,172 L 666,186 L 660,190 L 654,180 L 655,164 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- スマトラ -->
+        <path d="M 626,184 L 648,174 L 668,178 L 672,192 L 660,202 L 640,204 L 626,196 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- ジャワ -->
+        <path d="M 650,210 L 670,205 L 692,208 L 698,218 L 680,224 L 658,220 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- ボルネオ -->
+        <path d="M 674,154 L 698,148 L 718,152 L 726,166 L 722,182 L 708,192 L 690,190 L 675,178 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- オーストラリア -->
+        <path d="M 694,240 L 718,228 L 748,222 L 778,224 L 806,232 L 826,246 L 836,266 L 832,290 L 820,312 L 800,330 L 774,342 L 748,346 L 720,340 L 696,326 L 678,306 L 668,284 L 668,262 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.6"/>
+        <!-- ニュージーランド（北島） -->
+        <path d="M 848,340 L 858,330 L 864,340 L 860,354 L 850,356 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.3"/>
+        <!-- ニュージーランド（南島） -->
+        <path d="M 844,362 L 856,356 L 862,368 L 856,384 L 844,386 L 838,374 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.3"/>
+        <!-- スリランカ -->
+        <path d="M 540,128 L 548,124 L 554,130 L 550,140 L 542,140 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.3"/>
+        <!-- マダガスカル -->
+        <path d="M 420,222 L 432,214 L 440,220 L 438,240 L 430,254 L 420,256 L 414,244 L 416,230 Z" fill="#c8c090" stroke="#a8a070" stroke-width="0.4"/>
+        <!-- スエズ・パナマ運河ライン -->
+        <line x1="434" y1="66" x2="436" y2="80" stroke="#fff" stroke-width="1.2" stroke-dasharray="2,2" opacity=".6"/>
+        <line x1="94" y1="208" x2="91" y2="218" stroke="#fff" stroke-width="1.2" stroke-dasharray="2,2" opacity=".6"/>
+        <text x="440" y="75" font-size="7" fill="#fff" font-family="sans-serif" opacity=".7">スエズ</text>
+        <text x="96" y="215" font-size="7" fill="#fff" font-family="sans-serif" opacity=".7">パナマ</text>
         <g id="route-lines"></g><g id="ship-icons"></g><g id="port-dots"></g>
       </svg>
     </div>
@@ -382,7 +418,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1
 
 <script>
 var APP=(function(){
-var PORTS={"東京":{x:696,y:46},"大阪":{x:686,y:56},"釜山":{x:676,y:50},"上海":{x:665,y:66},"広州":{x:649,y:80},"シンガポール":{x:623,y:164},"台中":{x:672,y:74},"ポートヘッドランド":{x:668,y:236},"ニューカッスル":{x:738,y:266},"グラッドストーン":{x:748,y:240},"ムンバイ":{x:476,y:82},"チェンナイ":{x:504,y:98},"カラチ":{x:460,y:72},"ダーバン":{x:308,y:192},"リチャーズベイ":{x:313,y:184},"サントス":{x:108,y:248},"パラナグア":{x:104,y:241},"ロサリオ":{x:97,y:234},"ニューオーリンズ":{x:68,y:156},"ヒューストン":{x:60,y:161},"ロッテルダム":{x:320,y:30},"アントワープ":{x:313,y:36},"ハンブルク":{x:328,y:22},"バンクーバー":{x:22,y:38},"ロングビーチ":{x:20,y:80},"ウスチルガ":{x:530,y:18},"敖徳薩":{x:366,y:24},"ノボロシースク":{x:374,y:26},"プエルトボリバル":{x:97,y:184},"カサブランカ":{x:233,y:70}};
+var PORTS={"東京":{x:730,y:68},"大阪":{x:720,y:78},"釜山":{x:710,y:72},"上海":{x:697,y:90},"広州":{x:678,y:106},"シンガポール":{x:655,y:186},"台中":{x:706,y:98},"ポートヘッドランド":{x:700,y:276},"ニューカッスル":{x:778,y:310},"グラッドストーン":{x:788,y:280},"ムンバイ":{x:505,y:104},"チェンナイ":{x:533,y:122},"カラチ":{x:488,y:92},"ダーバン":{x:338,y:234},"リチャーズベイ":{x:344,y:224},"サントス":{x:126,y:290},"パラナグア":{x:122,y:282},"ロサリオ":{x:114,y:272},"ニューオーリンズ":{x:80,y:178},"ヒューストン":{x:72,y:184},"ロッテルダム":{x:350,y:32},"アントワープ":{x:342,y:40},"ハンブルク":{x:358,y:22},"バンクーバー":{x:24,y:44},"ロングビーチ":{x:22,y:96},"ウスチルガ":{x:562,y:18},"敖徳薩":{x:394,y:26},"ノボロシースク":{x:404,y:28},"プエルトボリバル":{x:114,y:218},"カサブランカ":{x:258,y:84}};
 var STYPES=[{label:"Handysize",dwt:32,spd:13,col:"#378ADD",fuelTDay:22},{label:"Supramax",dwt:56,spd:14,col:"#1D9E75",fuelTDay:32},{label:"Panamax",dwt:75,spd:14,col:"#EF9F27",fuelTDay:42}];
 var CTPL=[{cargo:"穀物",from:"バンクーバー",to:"東京",days:12,minDWT:56,base:52},{cargo:"穀物",from:"バンクーバー",to:"上海",days:14,minDWT:56,base:50},{cargo:"穀物",from:"ニューオーリンズ",to:"ロッテルダム",days:22,minDWT:56,base:56},{cargo:"穀物",from:"ニューオーリンズ",to:"上海",days:32,minDWT:56,base:60},{cargo:"穀物",from:"ヒューストン",to:"アントワープ",days:21,minDWT:56,base:55},{cargo:"穀物",from:"サントス",to:"ロッテルダム",days:20,minDWT:56,base:54},{cargo:"穀物",from:"サントス",to:"上海",days:28,minDWT:56,base:58},{cargo:"穀物",from:"パラナグア",to:"アントワープ",days:20,minDWT:56,base:54},{cargo:"穀物",from:"ロサリオ",to:"ハンブルク",days:21,minDWT:56,base:55},{cargo:"穀物",from:"敖徳薩",to:"ロッテルダム",days:10,minDWT:32,base:46},{cargo:"大豆",from:"サントス",to:"上海",days:28,minDWT:56,base:62},{cargo:"大豆",from:"パラナグア",to:"上海",days:28,minDWT:56,base:62},{cargo:"大豆",from:"ロサリオ",to:"東京",days:35,minDWT:56,base:65},{cargo:"大豆",from:"ニューオーリンズ",to:"上海",days:32,minDWT:56,base:60},{cargo:"大豆",from:"バンクーバー",to:"大阪",days:12,minDWT:56,base:52},{cargo:"石炭",from:"シンガポール",to:"東京",days:7,minDWT:32,base:44},{cargo:"石炭",from:"シンガポール",to:"釜山",days:6,minDWT:32,base:43},{cargo:"石炭",from:"グラッドストーン",to:"東京",days:9,minDWT:32,base:46},{cargo:"石炭",from:"グラッドストーン",to:"釜山",days:10,minDWT:32,base:45},{cargo:"石炭",from:"ニューカッスル",to:"上海",days:11,minDWT:32,base:44},{cargo:"石炭",from:"ウスチルガ",to:"東京",days:6,minDWT:32,base:43},{cargo:"鉄鉱石",from:"ポートヘッドランド",to:"上海",days:12,minDWT:75,base:60},{cargo:"鉄鉱石",from:"ポートヘッドランド",to:"東京",days:14,minDWT:75,base:62},{cargo:"鉄鉱石",from:"ポートヘッドランド",to:"釜山",days:13,minDWT:75,base:61},{cargo:"鉄鉱石",from:"サントス",to:"上海",days:30,minDWT:75,base:65},{cargo:"鉄鉱石",from:"リチャーズベイ",to:"上海",days:18,minDWT:75,base:58},{cargo:"銅精鉱",from:"バンクーバー",to:"上海",days:14,minDWT:32,base:50},{cargo:"銅精鉱",from:"ロングビーチ",to:"上海",days:15,minDWT:32,base:50},{cargo:"砂糖",from:"サントス",to:"ロッテルダム",days:20,minDWT:32,base:46},{cargo:"砂糖",from:"プエルトボリバル",to:"アントワープ",days:18,minDWT:32,base:44},{cargo:"リン鉱石",from:"カサブランカ",to:"ムンバイ",days:18,minDWT:32,base:44}];
 var MKT_NAMES=["BLUE ATLAS","IRON DUCHESS","CORAL QUEEN","STAR HORIZON","TITAN WAVE","SILVER CAPE","JADE VOYAGER","AMBER TIDE","PACIFIC HAWK","NORDIC GLORY","OCEAN SPIRIT","DELTA STAR"];
@@ -471,19 +507,29 @@ function rollEvent(){
   });
   var ev=pool[Math.floor(Math.random()*pool.length)];
   S.lastEvent=ev;
-  if(ev.type==='none')return;
+  if(ev.type==='none'){
+    // 無イベント時も燃料は小幅変動
+    var fuelRand = Math.round((Math.random()-0.5)*60);
+    S.fuelPrice = Math.max(300,Math.min(1400,S.fuelPrice+fuelRand));
+    return;
+  }
   var baseMag=Math.round(200+Math.random()*300);
   var factor=ev.bdiFactor||1.0;
   var mag=Math.round(baseMag*factor);
-  if(ev.mag==='big') mag=Math.round(500+Math.random()*800); // 大イベントは500〜1300
+  if(ev.mag==='big') mag=Math.round(500+Math.random()*800);
   if(ev.type==='up'){
     S.bdi=Math.min(5000,S.bdi+mag);
     for(var i=0;i<S.mktShips.length;i++)S.mktShips[i].ownerRate=Math.round(S.mktShips[i].ownerRate*(ev.mag==='big'?1.25:1.08)/500)*500;
+    // 上昇イベント時は燃料も変動（需要増=多少上がる）
+    var fuelChange = ev.fuelDelta || Math.round((Math.random()-0.3)*80);
+    S.fuelPrice = Math.max(300,Math.min(1400,S.fuelPrice+fuelChange));
   } else {
     S.bdi=Math.max(200,S.bdi-mag);
     for(var i=0;i<S.mktShips.length;i++)S.mktShips[i].ownerRate=Math.max(2000,Math.round(S.mktShips[i].ownerRate*(ev.mag==='big'?0.72:0.93)/500)*500);
+    // 下落イベント時は燃料変動
+    var fuelChange2 = ev.fuelDelta || Math.round((Math.random()-0.5)*60);
+    S.fuelPrice = Math.max(300,Math.min(1400,S.fuelPrice+fuelChange2));
   }
-  if(ev.fuelDelta)S.fuelPrice=Math.max(200,Math.min(1500,S.fuelPrice+ev.fuelDelta));
 }
 function renderEvent(){
   var el=document.getElementById('event-area'),ev=S.lastEvent;
@@ -513,6 +559,23 @@ function refreshNegPanel(){var msgEl=document.getElementById('np-msg'),bodyEl=do
 function refreshCargoPanel(){var msgEl=document.getElementById('ca-msg'),bodyEl=document.getElementById('ca-body');function hide(m,err){msgEl.style.display='';msgEl.textContent=m;msgEl.style.color=err?'#E24B4A':'#888';bodyEl.style.display='none';}if(!S.selActiveShip||!S.selCargo){hide(S.selActiveShip?'カーゴ市場でカーゴを選んでください':'用船中の船のスロットをタップしてください',false);return;}var ac=getAC(S.selActiveShip),cargo=getCargo(S.selCargo);if(!ac||!cargo){hide('',false);return;}if(ac.status==='delivering'){hide('この船は現在運送中です。揚げ地到着後に次のカーゴを積めます',true);return;}var t=STYPES[ac.ti];if(t.dwt<cargo.minDWT){hide('DWT不足 — 必要:'+cargo.minDWT+'k / この船:'+t.dwt+'k',true);return;}if(cargo.taken||cargo.rivalTaken){hide('このカーゴは既に成約済みです',true);return;}msgEl.style.display='none';bodyEl.style.display='';var sc=schedChk(ac.pos,ac.ti,cargo);var tot=sc.bd+cargo.days,fuel=fuelVoy(ac.ti,tot),hireCostV=Math.round(ac.hirePerDay*tot);var rev=Math.round(S.caFreightOffer*cargo.qty*1000),margin=rev-hireCostV-fuel;var minFr=Math.ceil((hireCostV+fuel)/(cargo.qty*1000));var fp=freightProb(S.caFreightOffer,cargo.rate),fl=probLbl(fp);var col=COLORS[ac.colorIdx%COLORS.length];document.getElementById('ca-info').innerHTML='<div style="display:flex;align-items:center;gap:5px;margin-bottom:.2rem"><div style="width:16px;height:16px;border-radius:3px;background:'+col+';display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:600;flex-shrink:0">'+lbl(ac)+'</div><b style="font-size:11px">'+ac.name+'</b> × <b>'+cargo.cargo+'</b></div><div style="font-size:9px;color:#888">'+cargo.from+'→'+cargo.to+' | '+cargo.qty+'k t | バラスト '+sc.bd+'日 + 運航'+cargo.days+'日 = 計'+tot+'日</div>';document.getElementById('ca-schedule').innerHTML='<span style="color:'+(sc.ok?'#1D9E75':'#E24B4A')+'">'+(sc.ok?'✓ ':'✗ ')+'到着予定 '+fmtD(sc.arr)+' | laycan '+fmtD(cargo.laycanStart)+'〜'+fmtD(cargo.laycanEnd)+'</span>';document.getElementById('ca-mkt-rate').innerHTML='$'+cargo.rate+'/t';var fi=document.getElementById('ca-freight-input');if(document.activeElement!==fi)fi.value=S.caFreightOffer;document.getElementById('ca-freight-status').innerHTML='<span style="padding:2px 6px;border-radius:5px;font-size:10px;background:'+fl.bg+';color:'+fl.c+'">'+fl.t+'</span>';document.getElementById('ca-calc').innerHTML='<div style="font-size:9px;color:#888;margin-bottom:.18rem">採算ライン $'+minFr+'/t | 用船料コスト $'+Math.round(hireCostV/1000)+'K | 燃料 $'+Math.round(fuel/1000)+'K</div><div class="calc-box"><div class="calc-item"><div class="cl">収入</div><div class="cv" style="color:#185FA5">$'+Math.round(rev/1000)+'K</div></div><div style="color:#888">−</div><div class="calc-item"><div class="cl">用船料</div><div class="cv" style="color:#E24B4A">$'+Math.round(hireCostV/1000)+'K</div></div><div style="color:#888">−</div><div class="calc-item"><div class="cl">燃料</div><div class="cv" style="color:#E24B4A">$'+Math.round(fuel/1000)+'K</div></div><div style="color:#888">=</div><div class="calc-item"><div class="cl">利益</div><div class="cv" style="color:'+(margin>=0?'#1D9E75':'#E24B4A')+'">$'+Math.round(margin/1000)+'K</div></div></div>';}
 function renderAll(){renderEvent();renderMetrics();renderCharter();renderMyShips();renderCargoes();renderMap();}
 return{
+goHome:function(){
+  if(S.timerHandle){clearInterval(S.timerHandle);S.timerHandle=null;}
+  S.timerActive=false;
+  if(!confirm('ホーム画面に戻りますか？\n（ゲームの進行状況はリセットされます）'))return;
+  // 状態リセット
+  S.round=1;S.maxRound=6;S.profit=0;S.bdi=1200;S.cash=50e6;S.deals=0;S.fuelPrice=600;
+  S.curDate=new Date(BASE_DATE);S.mktShips=[];S.nextId=1;S.nextCol=0;
+  S.activeCharters=[];S.cargoes=[];S.selMktShip=null;S.negPeriod=1;S.hireOffer=0;
+  S.selActiveShip=null;S.selCargo=null;S.caFreightOffer=0;S.logs=[];S.lastEvent=null;
+  S.doneList=[];S.timerSec=300;S.rivalSchedule=[];S.rivalLog=[];
+  document.getElementById('screen-game').style.display='none';
+  document.getElementById('screen-start').style.display='';
+  document.getElementById('logbox').innerHTML='';
+  document.getElementById('done-list').innerHTML='なし';
+  document.getElementById('event-area').innerHTML='';
+  document.getElementById('rival-log-area').innerHTML='';
+},
 startGame:function(){
   document.getElementById('screen-start').style.display='none';
   document.getElementById('screen-game').style.display='';
@@ -552,7 +615,7 @@ stepCaFreight:function(d){S.caFreightOffer=Math.max(1,S.caFreightOffer+d);var i=
 onCaFreightInput:function(raw){var v=parseInt(raw);if(isNaN(v)||raw==='')return;S.caFreightOffer=Math.max(1,v);refreshCargoPanel();},
 fixCargoAssign:function(){var ac=getAC(S.selActiveShip),cargo=getCargo(S.selCargo);if(!ac||!cargo)return;if(ac.status==='delivering'){addLog('運送中のため新カーゴは積めません');return;}var sc=schedChk(ac.pos,ac.ti,cargo);if(!sc.ok){addLog('✗ laycan超過 — 積載不可');return;}if(cargo.taken||cargo.rivalTaken){addLog('このカーゴは既に成約済みです');return;}var fp=freightProb(S.caFreightOffer,cargo.rate);if(Math.random()*100<fp){var tot=sc.bd+cargo.days,fuel=fuelVoy(ac.ti,tot);var hireCostV=Math.round(ac.hirePerDay*tot);var rev=Math.round(S.caFreightOffer*cargo.qty*1000),margin=rev-hireCostV-fuel;S.profit+=rev-fuel;S.cash+=rev;S.cash-=fuel;S.deals++;cargo.taken=true;var arrR=S.round+Math.ceil(tot/30);ac.status='delivering';ac.cargoInfo={cargo:cargo.cargo,from:cargo.from,to:cargo.to,days:cargo.days,qty:cargo.qty,freightPerT:S.caFreightOffer,revenue:rev,arriveRound:arrR,destPos:cargo.to};addLog('[R'+S.round+'] ✓ カーゴ成約: '+ac.name+' '+cargo.cargo+' $'+S.caFreightOffer+'/t | 利益 '+fmt(margin));addDone('✓ カーゴ: '+ac.name+' '+cargo.cargo+' | 利益 '+fmt(margin));}else{addLog('[R'+S.round+'] ✗ 荷主拒否: '+cargo.cargo+' $'+S.caFreightOffer+'/t — 運賃が高すぎた');}S.selCargo=null;S.selActiveShip=null;renderAll();this.showTab('myships');},
 cancelCargoAssign:function(){S.selCargo=null;S.selActiveShip=null;renderAll();this.showTab('myships');},
-nextRound:function(){if(S.timerHandle){clearInterval(S.timerHandle);S.timerHandle=null;}S.timerActive=false;var next=[];for(var i=0;i<S.activeCharters.length;i++){var ac=S.activeCharters[i];var monthHire=Math.round(ac.hirePerDay*30);S.profit-=monthHire;S.cash-=monthHire;ac.totalHirePaid+=monthHire;if(ac.status==='delivering'&&ac.cargoInfo&&ac.cargoInfo.arriveRound<=S.round+1){ac.pos=ac.cargoInfo.destPos;ac.status='idle';ac.cargoInfo=null;addLog('[R'+S.round+'] 🚢 '+ac.name+' — 揚げ地到着。次のカーゴを積める');}ac.remainRounds--;if(ac.remainRounds>0)next.push(ac);else addLog('[R'+S.round+'] 用船終了: '+ac.name+' (用船料累計 $'+Math.round(ac.totalHirePaid/1000)+'K)');}S.activeCharters=next;S.curDate=addDays(S.curDate,30);addLog('── R'+S.round+' 終了 | '+fmtDL(S.curDate)+' | BDI:'+S.bdi+' ──');S.round++;S.doneList=[];document.getElementById('done-list').innerHTML='なし';if(S.round>S.maxRound){this._showResult();return;}rollEvent();genCargoes();genMktShips();S.selMktShip=null;S.selActiveShip=null;S.selCargo=null;S.rivalLog=[];document.getElementById('rival-log-area').innerHTML='';renderAll();this.showTab('charter');addLog('R'+S.round+' 開始！');startTimer();},
+nextRound:function(){if(S.timerHandle){clearInterval(S.timerHandle);S.timerHandle=null;}S.timerActive=false;var next=[];for(var i=0;i<S.activeCharters.length;i++){var ac=S.activeCharters[i];var monthHire=Math.round(ac.hirePerDay*30);S.profit-=monthHire;S.cash-=monthHire;ac.totalHirePaid+=monthHire;if(ac.status==='delivering'&&ac.cargoInfo&&ac.cargoInfo.arriveRound<=S.round+1){ac.pos=ac.cargoInfo.destPos;ac.status='idle';ac.cargoInfo=null;addLog('[R'+S.round+'] 🚢 '+ac.name+' — 揚げ地到着。次のカーゴを積める');}ac.remainRounds--;if(ac.remainRounds>0)next.push(ac);else addLog('[R'+S.round+'] 用船終了: '+ac.name+' (用船料累計 $'+Math.round(ac.totalHirePaid/1000)+'K)');}S.activeCharters=next;S.curDate=addDays(S.curDate,30);var prevFuel=S.fuelPrice;rollEvent();var fuelMsg=S.fuelPrice>prevFuel?'▲+$'+(S.fuelPrice-prevFuel):S.fuelPrice<prevFuel?'▼-$'+(prevFuel-S.fuelPrice):'変動なし';addLog('── R'+S.round+' 終了 | BDI:'+S.bdi+' | 燃料:$'+S.fuelPrice+'/t('+fuelMsg+') ──');S.round++;S.doneList=[];document.getElementById('done-list').innerHTML='なし';if(S.round>S.maxRound){this._showResult();return;}genCargoes();genMktShips();S.selMktShip=null;S.selActiveShip=null;S.selCargo=null;S.rivalLog=[];document.getElementById('rival-log-area').innerHTML='';renderAll();this.showTab('charter');addLog('R'+S.round+' 開始！');startTimer();},
 _showResult:function(){if(S.timerHandle)clearInterval(S.timerHandle);var p=S.profit,grade=p>=40e6?'S':p>=20e6?'A':p>=0?'B':p>=-10e6?'C':'D';var msg=p>=40e6?'伝説の船主！':p>=20e6?'優秀な経営':p>=0?'黒字確保':p>=-10e6?'赤字経営':'大赤字…';var overlay=document.createElement('div');overlay.className='result-overlay';overlay.innerHTML='<div class="result-box"><div style="font-size:52px;font-weight:700">'+grade+'</div><div style="font-size:16px;font-weight:500;margin:.3rem 0">'+msg+'</div><div style="font-size:11px;color:#888;margin-bottom:1.2rem">最終利益: '+fmt(p)+' | 成約 '+S.deals+'件</div><button class="btn btn-ok" onclick="location.reload()" style="width:100%;font-size:14px;padding:.65rem">もう一度プレイ</button></div>';document.body.appendChild(overlay);}
 };
 })();
