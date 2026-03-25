@@ -77,6 +77,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1
 /* 結果 */
 .rank-row{display:flex;align-items:center;gap:10px;padding:.6rem .85rem;border-radius:10px;margin-bottom:.45rem;background:#fff;border:0.5px solid rgba(0,0,0,.1)}
 .rank-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+
+.ci.special{border:2px solid #EF9F27;background:#FAEEDA30;}
+.ci.special:active{background:#FAEEDA80;}
+.special-badge{font-size:9px;padding:1px 6px;border-radius:99px;background:#EF9F27;color:#412402;margin-left:4px;font-weight:600;}
+.urgent-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:200;padding:1rem;}
+.urgent-box{background:#fff;border-radius:14px;padding:1.4rem 1.5rem;max-width:320px;width:100%;border:2.5px solid #E24B4A;}
+.tut-overlay-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.72);z-index:300;display:flex;align-items:flex-end;justify-content:center;padding:1rem;}
+.tut-box{background:#fff;border-radius:14px;padding:1.2rem 1.4rem;max-width:480px;width:100%;margin-bottom:.5rem;}
+.weather-banner{border-radius:8px;padding:.42rem .7rem;margin-bottom:.3rem;font-size:10px;font-weight:500;background:#1a1a2e;color:#79c0ff;border:0.5px solid #30363d;}
 </style>
 </head>
 <body>
@@ -98,6 +107,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1
   <div id="error-msg" class="error-msg"></div>
 
   <button class="btn btn-blue" onclick="LOBBY.createRoom()">＋ 新しいルームを作る（ホスト）</button>
+  <button class="btn" onclick="GAME.showMultiTutorial()" style="font-size:12px;color:#185FA5;border-color:#185FA5;width:100%;margin-bottom:.5rem">📖 ゲームの遊び方（チュートリアル）</button>
   <button class="btn btn-gray" onclick="LOBBY.showJoin()">→ ルームコードで入室</button>
 
   <div id="join-area" style="display:none">
@@ -173,6 +183,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1
   </div>
 
   <div id="event-area" style="margin-bottom:.3rem"></div>
+  <div id="weather-area" style="margin-bottom:.3rem"></div>
 
   <!-- メトリクス -->
   <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-bottom:.45rem">
@@ -456,6 +467,94 @@ var LOBBY = (function(){
   };
 })();
 
+
+// ===== 天候イベント（マルチ：ホストが生成してsharedStateに含める） =====
+var WEATHER_EVENTS_MP=[
+  {title:'台風接近',desc:'アジア港のlaycan+5日延長。',region:'asia',dayAdd:5,emoji:'🌀'},
+  {title:'ハリケーン',desc:'南米〜北米航路に影響。laycan+4日延長。',region:'america',dayAdd:4,emoji:'🌪️'},
+  {title:'欧州濃霧',desc:'欧州北部の通航制限。laycan+3日延長。',region:'europe',dayAdd:3,emoji:'🌫️'},
+  {title:'豪州山火事',desc:'石炭産地が操業停止。一部港閉鎖。',region:'australia',dayAdd:0,block:true,emoji:'🔥'},
+  {title:'インド洋大洪水',desc:'インド周辺港が浸水。laycan+4日延長。',region:'india',dayAdd:4,emoji:'🌊'},
+];
+var REGION_PORTS_MP={asia:['東京','大阪','釜山','上海','広州','シンガポール','台中'],america:['ニューオーリンズ','ヒューストン','バンクーバー','ロングビーチ','サントス','パラナグア','ロサリオ','プエルトボリバル'],europe:['ロッテルダム','アントワープ','ハンブルク','敖徳薩'],australia:['ニューカッスル','グラッドストーン','ポートヘッドランド'],india:['ムンバイ','チェンナイ','カラチ','ダーバン','リチャーズベイ']};
+function applyWeatherToSharedState(ss){
+  if(!ss||!ss.cargoes)return ss;
+  if(Math.random()>0.28)return ss;
+  var ev=WEATHER_EVENTS_MP[Math.floor(Math.random()*WEATHER_EVENTS_MP.length)];
+  ss.weatherEvent=ev;
+  var ports=REGION_PORTS_MP[ev.region]||[];
+  ss.cargoes.forEach(function(cg){
+    var hit=ports.indexOf(cg.from)>=0||ports.indexOf(cg.to)>=0;
+    if(!hit)return;
+    if(ev.dayAdd>0){cg.laycanStartMs+=ev.dayAdd*86400000;cg.laycanEndMs+=ev.dayAdd*86400000;}
+    if(ev.block&&Math.random()<0.4)cg.rivalBooked=true;
+  });
+  return ss;
+}
+var S_mp_weather={active:false,ev:null};
+function renderWeatherBanner(){
+  var el=document.getElementById('weather-area');if(!el)return;
+  if(!S_mp_weather.active){el.innerHTML='';return;}
+  var ev=S_mp_weather.ev;
+  var ports=REGION_PORTS_MP[ev.region]||[];
+  el.innerHTML='<div class="weather-banner">'+ev.emoji+' <b>天候影響中: '+ev.title+'</b> — '+ev.desc+' <span style="opacity:.7;font-size:9px">影響港: '+ports.slice(0,4).join('・')+'</span></div>';
+}
+
+// ===== 緊急オファー（マルチ） =====
+var S_urgent_mp={handle:null,closeTimer:null,ship:null};
+function spawnUrgentOffer_mp(){
+  if(S_urgent_mp.handle)clearTimeout(S_urgent_mp.handle);
+  var delay=(60+Math.floor(Math.random()*120))*1000;
+  S_urgent_mp.handle=setTimeout(function(){
+    if(!S.timerActive)return;
+    var avail=S.mktShips.filter(function(s){return !s.booked&&!s.rivalBooked;});
+    if(!avail.length)return;
+    var ship=avail[Math.floor(Math.random()*avail.length)];
+    S_urgent_mp.ship={id:ship.id,name:ship.name,ti:ship.ti,pos:ship.pos,colorIdx:ship.colorIdx,discountRate:Math.round(ship.ownerRate*0.72/500)*500,ownerRate:ship.ownerRate};
+    showUrgentModal_mp();
+  },delay);
+}
+function showUrgentModal_mp(){
+  var ship=S_urgent_mp.ship,t=STYPES[ship.ti],col=PCOLORS[ship.colorIdx%PCOLORS.length];
+  document.getElementById('urgent-content').innerHTML=
+    '<div style="display:flex;align-items:center;gap:6px;margin-bottom:.45rem">'+
+    '<div style="width:18px;height:18px;border-radius:3px;background:'+col+';display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:600">#'+ship.id+'</div>'+
+    '<b>'+ship.name+'</b><span style="font-size:10px;color:#888">['+t.label+' '+t.dwt+'k]</span></div>'+
+    '<div style="font-size:11px">現在地: <b>'+ship.pos+'</b></div>'+
+    '<div style="margin-top:.3rem"><span style="text-decoration:line-through;color:#aaa">通常: $'+Math.round(ship.ownerRate/1000)+'K/日</span>'+
+    ' <b style="color:#E24B4A;font-size:15px">$'+Math.round(ship.discountRate/1000)+'K/日</b> <span style="font-size:11px;background:#FCEBEB;color:#791F1F;padding:1px 5px;border-radius:4px">28%OFF</span></div>'+
+    '<div style="font-size:10px;color:#888;margin-top:.25rem">30秒限定。1ラウンド用船。</div>';
+  document.getElementById('urgent-modal').style.display='';
+  var sec=30;
+  document.getElementById('urgent-timer').textContent=sec;
+  if(S_urgent_mp.closeTimer)clearInterval(S_urgent_mp.closeTimer);
+  S_urgent_mp.closeTimer=setInterval(function(){
+    sec--;
+    var el=document.getElementById('urgent-timer');
+    if(el){el.textContent=sec;el.style.color=sec<=10?'#E24B4A':'#BA7517';}
+    if(sec<=0){clearInterval(S_urgent_mp.closeTimer);S_urgent_mp.closeTimer=null;closeUrgentModal_mp();addLog('⚡ 緊急オファー期限切れ');}
+  },1000);
+}
+function closeUrgentModal_mp(){document.getElementById('urgent-modal').style.display='none';}
+
+// ===== チュートリアル（マルチ用） =====
+var TUT_STEPS_MP=[
+  {title:'マルチプレイの目的',body:'ルームを作り、友達と同じ市場でリアルタイムに競います。全6ラウンドで最も利益を上げたプレイヤーが勝利！'},
+  {title:'用船市場',body:'「用船市場」タブで船を選んで用船交渉。<br>他のプレイヤーが先に用船すると「○○が用船」と表示されます。<b>良い船は早い者勝ち！</b>'},
+  {title:'カーゴ争奪戦',body:'「用船中の船」→ スロットタップ → カーゴ市場でカーゴ選択。<br>他プレイヤーが先に取るとグレーアウトされます。<b>高単価カーゴは即決で！</b>'},
+  {title:'特別機能',body:'⭐ <b>スペシャルカーゴ</b>：超高単価。全員が狙う。<br>🌀 <b>天候イベント</b>：港のlaycanが変動。<br>⚡ <b>緊急オファー</b>：30秒限定の割引用船。<br>← <b>ロビーボタン</b>：いつでも退出できます。'},
+  {title:'準備完了！',body:'ホストが「ゲームスタート」を押したら全員同時に開始。タイマーは全員共通です。<br><br>ゲーム終了後に順位表が表示されます。頑張ってください！'},
+];
+var S_tut_mp={step:0};
+function showTutStep_mp(){
+  var step=TUT_STEPS_MP[S_tut_mp.step];
+  document.getElementById('tut-modal').style.display='';
+  document.getElementById('tut-title').textContent=step.title;
+  document.getElementById('tut-body').innerHTML=step.body;
+  document.getElementById('tut-progress').textContent=(S_tut_mp.step+1)+'/'+TUT_STEPS_MP.length;
+  document.getElementById('tut-next-btn').textContent=S_tut_mp.step===TUT_STEPS_MP.length-1?'閉じる':'次へ →';
+}
+
 // ================================================================
 // GAME
 // ================================================================
@@ -550,20 +649,44 @@ function renderEvent(){
 function renderMetrics(){var pe=document.getElementById('m-profit');pe.textContent=fmt(S.profit);pe.style.color=S.profit>=0?'#1D9E75':'#E24B4A';document.getElementById('m-bdi').textContent=S.bdi.toLocaleString();document.getElementById('m-fuel').textContent='$'+S.fuelPrice;document.getElementById('m-deals').textContent=S.deals+'件';document.getElementById('m-cash').textContent=fmtC(S.cash);document.getElementById('phase-tag').textContent='R'+S.round+'/'+S.maxRound;document.getElementById('cur-date').textContent=fmtDL(S.curDate);}
 function renderCharter(){var h='';for(var i=0;i<S.mktShips.length;i++){var s=S.mktShips[i],t=STYPES[s.ti],col=PCOLORS[s.colorIdx%PCOLORS.length];var unavail=s.booked||s.rivalBooked;var sel=s.id===S.selMktShip;var bg=sel?'background:'+col+'15;margin:0 -.85rem;padding:.32rem .85rem;border-radius:4px;':'';var dim=unavail?'opacity:.35;':'';var tagTxt=s.rivalBooked?'競合':s.booked?(s.bookedByName||'用船済'):'用船可';var tagBg=s.rivalBooked?'background:#FCEBEB;color:#791F1F':s.booked?'background:#EEEDFE;color:#3C3489':'background:#FAEEDA;color:#633806';h+='<div class="srow" style="'+bg+dim+'" onclick="GAME.pickMktShip('+s.id+')"><div style="width:16px;height:16px;border-radius:2px;background:'+col+';display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:600;color:#fff;flex-shrink:0">'+lbl(s)+'</div><div style="flex:1;min-width:0"><div style="font-size:10px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.name+(s.isBroker?'<span class="broker-badge">⚠</span>':'')+'</div><div style="font-size:9px;color:#888">'+t.label+' '+t.dwt+'k | '+s.pos+' | $'+Math.round(s.ownerRate/1000)+'K/日</div></div><span style="font-size:10px;padding:1px 6px;border-radius:99px;flex-shrink:0;'+tagBg+'">'+tagTxt+'</span></div>';}document.getElementById('charter-list').innerHTML=h;}
 function renderMyShips(){var el=document.getElementById('myships-list');if(!S.activeCharters.length){el.innerHTML='<div style="font-size:11px;color:#888">用船中の船なし</div>';return;}var h='';for(var i=0;i<S.activeCharters.length;i++){var ac=S.activeCharters[i],t=STYPES[ac.ti],col=PCOLORS[ac.colorIdx%PCOLORS.length];h+='<div class="aship"><div style="font-size:11px;font-weight:500;color:'+col+'">'+ac.name+' <span style="font-size:9px;color:#888">'+t.label+' '+t.dwt+'k | $'+Math.round(ac.hirePerDay/1000)+'K/日 残'+ac.remainRounds+'R</span></div><div style="font-size:9px;color:#888">現在地:'+ac.pos+'</div>';if(ac.status==='delivering'&&ac.cargoInfo){h+='<div class="cargo-slot delivering">▶ '+ac.cargoInfo.cargo+' '+ac.cargoInfo.from+'→'+ac.cargoInfo.to+' R'+ac.cargoInfo.arriveRound+'着</div>';}else{h+='<div class="cargo-slot empty" onclick="GAME.selectSlot('+ac.id+')">＋ カーゴを割り当てる</div>';}h+='</div>';}el.innerHTML=h;}
-function renderCargoes(){var h='';for(var i=0;i<S.cargoes.length;i++){var c=S.cargoes[i],sel=c.id===S.selCargo;var border=sel?'border:1.5px solid #1D9E75;background:#f0fff8;':'';var taken=c.taken||c.rivalBooked;var cls='ci'+(taken?' taken':'');var ltag='';if(S.selActiveShip){var ac=getAC(S.selActiveShip);if(ac&&!taken){var sc=schedChk(ac.pos,ac.ti,c);ltag=sc.ok?'<span style="font-size:8px;color:#1D9E75"> ✓</span>':'<span style="font-size:8px;color:#E24B4A"> ✗</span>';}}var stTag=taken?'<span style="font-size:8px;color:'+(c.rivalBooked?'#E24B4A':'#7F77DD')+'">'+(c.takenByName||'成約済')+'</span>':'';h+='<div class="'+cls+'" style="'+border+'" onclick="GAME.pickCargoAssign('+c.id+')"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-size:11px;font-weight:500">'+c.cargo+ltag+' <span style="font-size:9px;color:#888">'+c.qty+'k t</span></div><div style="font-size:9px;color:#888">'+c.from+' → '+c.to+' | 最小'+c.minDWT+'k</div><div style="font-size:9px;color:#534AB7">laycan '+fmtD(c.laycanStart)+'〜'+fmtD(c.laycanEnd)+'</div></div><div style="text-align:right"><div style="font-size:11px;font-weight:500;color:#185FA5">$'+c.rate+'/t</div>'+stTag+'</div></div></div>';}document.getElementById('cargo-list').innerHTML=h||'<div style="font-size:11px;color:#888">なし</div>';}
+function renderCargoes(){var h='';for(var i=0;i<S.cargoes.length;i++){var c=S.cargoes[i],sel=c.id===S.selCargo;var border=sel?'border:1.5px solid #1D9E75;background:#f0fff8;':'';var taken=c.taken||c.rivalBooked;var cls='ci'+(taken?' taken':c.special?' special':'');var ltag='';if(S.selActiveShip){var ac=getAC(S.selActiveShip);if(ac&&!taken){var sc=schedChk(ac.pos,ac.ti,c);ltag=sc.ok?'<span style="font-size:8px;color:#1D9E75"> ✓</span>':'<span style="font-size:8px;color:#E24B4A"> ✗</span>';}}var stTag=taken?'<span style="font-size:8px;color:'+(c.rivalBooked?'#E24B4A':'#7F77DD')+'">'+(c.takenByName||'成約済')+'</span>':'';h+='<div class="'+cls+'" style="'+border+'" onclick="GAME.pickCargoAssign('+c.id+')"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-size:11px;font-weight:500">'+c.cargo+(c.special?'<span class="special-badge">SPECIAL</span>':'')+ltag+' <span style="font-size:9px;color:#888">'+c.qty+'k t</span></div><div style="font-size:9px;color:#888">'+c.from+' → '+c.to+' | 最小'+c.minDWT+'k</div><div style="font-size:9px;color:#534AB7">laycan '+fmtD(c.laycanStart)+'〜'+fmtD(c.laycanEnd)+'</div></div><div style="text-align:right"><div style="font-size:11px;font-weight:500;color:#185FA5">$'+c.rate+'/t</div>'+stTag+'</div></div></div>';}document.getElementById('cargo-list').innerHTML=h||'<div style="font-size:11px;color:#888">なし</div>';}
 function renderMap(){var rl='',si='',pd='',up={};var sc=S.selCargo?getCargo(S.selCargo):null;for(var i=0;i<S.cargoes.length;i++){var c=S.cargoes[i];if(c.taken||c.rivalBooked)continue;up[c.from]=1;up[c.to]=1;var f=PORTS[c.from],t=PORTS[c.to];if(!f||!t)continue;var sel=(sc&&c.id===sc.id);var mx=(f.x+t.x)/2,my=(f.y+t.y)/2-20;rl+='<path d="M'+f.x+','+f.y+' Q'+mx+','+my+' '+t.x+','+t.y+'" stroke="'+(sel?'#1D9E75':'#378ADD')+'" stroke-width="'+(sel?2.5:1)+'" fill="none" opacity="'+(sel?1:.26)+'"/>';}if(S.selActiveShip&&sc){var ac2=getAC(S.selActiveShip);if(ac2){var sp=PORTS[ac2.pos],fp=PORTS[sc.from];if(sp&&fp){var mx2=(sp.x+fp.x)/2,my2=(sp.y+fp.y)/2-12;rl+='<path d="M'+sp.x+','+sp.y+' Q'+mx2+','+my2+' '+fp.x+','+fp.y+'" stroke="#E24B4A" stroke-width="1.5" fill="none" stroke-dasharray="4,3" opacity=".8"/>';}}}for(var name in up){var p=PORTS[name];if(!p)continue;var isL=false,isC=false;for(var i=0;i<S.cargoes.length;i++){if(S.cargoes[i].from===name&&!S.cargoes[i].taken&&!S.cargoes[i].rivalBooked){isL=true;isC=true;}if(S.cargoes[i].to===name&&!S.cargoes[i].taken&&!S.cargoes[i].rivalBooked)isC=true;}var pcol=isL?'#185FA5':isC?'#1D9E75':'#888780',r=isC?3.5:2;var an='middle',lx=p.x,ly=p.y-r-3;if(p.x>800){an='end';lx=p.x-r-2;}else if(p.x<32){an='start';lx=p.x+r+2;}if(p.y<14){ly=p.y+r+9;}pd+='<circle cx="'+p.x+'" cy="'+p.y+'" r="'+r+'" fill="'+pcol+'" opacity=".9"/><text x="'+lx+'" y="'+ly+'" text-anchor="'+an+'" font-size="7" fill="#0c2a4a" font-family="sans-serif" font-weight="500">'+name+'</text>';}var allShips=[];for(var i=0;i<S.mktShips.length;i++){var s=S.mktShips[i];if(!up[s.pos])up[s.pos]='ship';allShips.push({s:s,pos:s.pos,isSel:s.id===S.selMktShip});}for(var i=0;i<S.activeCharters.length;i++){var a=S.activeCharters[i];if(!up[a.pos])up[a.pos]='ship';allShips.push({s:{id:a.id,colorIdx:a.colorIdx},pos:a.pos,isSel:a.id===S.selActiveShip,lbl2:'#'+a.id});}var byPort={};for(var i=0;i<allShips.length;i++){var e=allShips[i];if(!byPort[e.pos])byPort[e.pos]=[];byPort[e.pos].push(e);}for(var pos in byPort){var arr=byPort[pos],p=PORTS[pos];if(!p)continue;for(var k=0;k<arr.length;k++){var e=arr[k],col=PCOLORS[e.s.colorIdx%PCOLORS.length];var cx=p.x+(k%3)*12-5,cy=p.y-16-Math.floor(k/3)*12;var isSel=e.isSel;si+='<polygon points="'+cx+','+(cy+7)+' '+(cx-3)+','+(cy+11)+' '+(cx+3)+','+(cy+11)+'" fill="'+col+'" opacity="'+(isSel?1:.7)+'"/><rect x="'+(cx-7)+'" y="'+(cy-6)+'" width="14" height="13" rx="2" fill="'+col+'" opacity="'+(isSel?1:.7)+'"'+(isSel?' stroke="#fff" stroke-width="1.5"':'')+' /><text x="'+cx+'" y="'+(cy+2)+'" text-anchor="middle" font-size="6" fill="#fff" font-family="sans-serif" font-weight="bold">'+(e.lbl2||lbl(e.s))+'</text>';}}document.getElementById('route-lines').innerHTML=rl;document.getElementById('ship-icons').innerHTML=si;document.getElementById('port-dots').innerHTML=pd;}
 function refreshNegPanel(){var msgEl=document.getElementById('np-msg'),bodyEl=document.getElementById('np-body');function hide(m,err){msgEl.style.display='';msgEl.textContent=m;msgEl.style.color=err?'#E24B4A':'#888';bodyEl.style.display='none';}if(!S.selMktShip){hide('用船市場で船を選んでください',false);return;}var ship=getMkt(S.selMktShip);if(!ship){hide('',false);return;}if(ship.booked||ship.rivalBooked){hide('この船は既に用船されています',true);return;}msgEl.style.display='none';bodyEl.style.display='';var col=PCOLORS[ship.colorIdx%PCOLORS.length],t=STYPES[ship.ti];document.getElementById('np-info').innerHTML='<div style="display:flex;align-items:center;gap:4px;margin-bottom:.2rem"><div style="width:13px;height:13px;border-radius:2px;background:'+col+';display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;font-weight:600;flex-shrink:0">'+lbl(ship)+'</div><b style="font-size:11px">'+ship.name+'</b><span style="font-size:9px;color:#854F0B">['+t.label+' '+t.dwt+'k]</span>'+(ship.isBroker?'<span class="broker-badge">⚠</span>':'')+'</div><div style="font-size:9px;color:#888">現在地:'+ship.pos+'</div>';document.getElementById('period-disp').textContent=S.negPeriod+'R';document.getElementById('np-period-note').textContent='期間中用船料≒$'+Math.round(S.hireOffer*S.negPeriod*30/1000)+'K';document.getElementById('np-owner-rate').innerHTML='$'+Math.round(ship.ownerRate/1000)+'K/日';document.getElementById('np-broker-warn').innerHTML=ship.isBroker?'<div style="font-size:9px;color:#E24B4A;margin-top:2px">※真の船主提示は$'+Math.round(ship.trueOwnerRate/1000)+'K/日かも</div>':'';var hi=document.getElementById('hire-input');if(document.activeElement!==hi)hi.value=Math.round(S.hireOffer/1000);var hp=hireProb(S.hireOffer,ship.ownerRate),hl=probLbl(hp);document.getElementById('np-hire-status').innerHTML='<span style="padding:1px 5px;border-radius:4px;background:'+hl.bg+';color:'+hl.c+'">'+hl.t+'</span>';document.getElementById('np-total-cost').textContent='合計:$'+Math.round(S.hireOffer*S.negPeriod*30/1000)+'K';document.getElementById('np-longterm-note').textContent=S.negPeriod>1?'長期用船: 市況上昇しても用船料固定':'期間1R: 毎ラウンド市場水準に左右される';}
 function refreshCargoPanel(){var msgEl=document.getElementById('ca-msg'),bodyEl=document.getElementById('ca-body');function hide(m,err){msgEl.style.display='';msgEl.textContent=m;msgEl.style.color=err?'#E24B4A':'#888';bodyEl.style.display='none';}if(!S.selActiveShip||!S.selCargo){hide(S.selActiveShip?'カーゴ市場でカーゴを選んでください':'用船中の船のスロットをタップしてください',false);return;}var ac=getAC(S.selActiveShip),cargo=getCargo(S.selCargo);if(!ac||!cargo){hide('',false);return;}if(ac.status==='delivering'){hide('この船は現在運送中です',true);return;}var t=STYPES[ac.ti];if(t.dwt<cargo.minDWT){hide('DWT不足 — 必要:'+cargo.minDWT+'k / この船:'+t.dwt+'k',true);return;}if(cargo.taken||cargo.rivalBooked){hide('このカーゴは既に成約済みです',true);return;}msgEl.style.display='none';bodyEl.style.display='';var sc=schedChk(ac.pos,ac.ti,cargo);var tot=sc.bd+cargo.days,fuel=fuelVoy(ac.ti,tot),hireCostV=Math.round(ac.hirePerDay*tot);var rev=Math.round(S.caFreightOffer*cargo.qty*1000),margin=rev-hireCostV-fuel;var minFr=Math.ceil((hireCostV+fuel)/(cargo.qty*1000));var fp=freightProb(S.caFreightOffer,cargo.rate),fl=probLbl(fp);var col=PCOLORS[ac.colorIdx%PCOLORS.length];document.getElementById('ca-info').innerHTML='<div style="display:flex;align-items:center;gap:4px;margin-bottom:.18rem"><div style="width:13px;height:13px;border-radius:2px;background:'+col+';display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;font-weight:600;flex-shrink:0">'+lbl(ac)+'</div><b style="font-size:11px">'+ac.name+'</b> × <b>'+cargo.cargo+'</b></div><div style="font-size:9px;color:#888">'+cargo.from+'→'+cargo.to+' | '+cargo.qty+'k t | BD '+sc.bd+'日+'+cargo.days+'日=計'+tot+'日</div>';document.getElementById('ca-schedule').innerHTML='<span style="color:'+(sc.ok?'#1D9E75':'#E24B4A')+'">'+(sc.ok?'✓ ':'✗ ')+'到着予定'+fmtD(sc.arr)+' laycan'+fmtD(cargo.laycanStart)+'〜'+fmtD(cargo.laycanEnd)+'</span>';document.getElementById('ca-mkt-rate').innerHTML='$'+cargo.rate+'/t';var fi=document.getElementById('ca-freight-input');if(document.activeElement!==fi)fi.value=S.caFreightOffer;document.getElementById('ca-freight-status').innerHTML='<span style="padding:1px 5px;border-radius:4px;background:'+fl.bg+';color:'+fl.c+'">'+fl.t+'</span>';document.getElementById('ca-calc').innerHTML='<div style="font-size:9px;color:#888;margin-bottom:.14rem">採算$'+minFr+'/t | 用船料$'+Math.round(hireCostV/1000)+'K | 燃料$'+Math.round(fuel/1000)+'K</div><div style="background:#f1efe8;border-radius:5px;padding:.26rem .46rem;display:flex;justify-content:space-between;align-items:center"><span style="text-align:center"><div style="font-size:8px;color:#888">収入</div><b style="color:#185FA5">$'+Math.round(rev/1000)+'K</b></span><span style="color:#888">−</span><span style="text-align:center"><div style="font-size:8px;color:#888">用船料</div><b style="color:#E24B4A">$'+Math.round(hireCostV/1000)+'K</b></span><span style="color:#888">−</span><span style="text-align:center"><div style="font-size:8px;color:#888">燃料</div><b style="color:#E24B4A">$'+Math.round(fuel/1000)+'K</b></span><span style="color:#888">=</span><span style="text-align:center"><div style="font-size:8px;color:#888">利益</div><b style="color:'+(margin>=0?'#1D9E75':'#E24B4A')+'">$'+Math.round(margin/1000)+'K</b></span></div>';}
-function renderAll(){renderEvent();renderMetrics();renderCharter();renderMyShips();renderCargoes();renderMap();renderOppBar();}
+function renderAll(){renderEvent();renderWeatherBanner();renderMetrics();renderCharter();renderMyShips();renderCargoes();renderMap();renderOppBar();}
 
 return {
+showMultiTutorial:function(){S_tut_mp.step=0;showTutStep_mp();},
+tutNext:function(){
+  S_tut_mp.step++;
+  if(S_tut_mp.step>=TUT_STEPS_MP.length){document.getElementById('tut-modal').style.display='none';return;}
+  showTutStep_mp();
+},
+tutSkip:function(){document.getElementById('tut-modal').style.display='none';},
+acceptUrgent:function(){
+  if(S_urgent_mp.closeTimer){clearInterval(S_urgent_mp.closeTimer);S_urgent_mp.closeTimer=null;}
+  closeUrgentModal_mp();
+  var ship=S_urgent_mp.ship;if(!ship)return;
+  var mktShip=getMkt(ship.id);
+  if(!mktShip||mktShip.booked||mktShip.rivalBooked){addLog('⚡ 緊急オファー：すでに用船済みです');return;}
+  mktShip.booked=true;
+  S.activeCharters.push({id:ship.id,name:ship.name,ti:ship.ti,colorIdx:ship.colorIdx,pos:ship.pos,hirePerDay:ship.discountRate,remainRounds:1,totalHirePaid:0,status:'idle',cargoInfo:null});
+  updateShared('ships/'+(ship.id-1)+'/booked',true);
+  pushAction('charter_booked',{shipId:ship.id,shipName:ship.name});
+  addLog('[R'+S.round+'] ⚡ 緊急オファー承諾！ '+ship.name+' $'+Math.round(ship.discountRate/1000)+'K/日（28%OFF）');
+  renderAll();this.showTab('myships');
+},
+rejectUrgent:function(){
+  if(S_urgent_mp.closeTimer){clearInterval(S_urgent_mp.closeTimer);S_urgent_mp.closeTimer=null;}
+  closeUrgentModal_mp();addLog('⚡ 緊急オファーを見送り');
+},
 goLobby:function(){if(S.timerHandle){clearInterval(S.timerHandle);S.timerHandle=null;}S.timerActive=false;if(!confirm('ロビーに戻りますか？（ゲームの進行状況はリセットされます）'))return;db.ref('rooms/'+S.roomId+'/players/'+S.myId).remove();location.reload();},
 generateSharedState: function(){
     var ships=[];var used=[];var nc=0;var n=5+Math.floor(Math.random()*2);
     for(var i=0;i<n;i++){var ni=Math.floor(Math.random()*MKT_NAMES.length);while(used.indexOf(ni)>=0)ni=Math.floor(Math.random()*MKT_NAMES.length);used.push(ni);var ti=Math.floor(Math.random()*3),pos=PORT_KEYS[Math.floor(Math.random()*PORT_KEYS.length)];var trueRate=Math.round((STYPES[ti].fuelTDay*30*600*(0.8+Math.random()*.5)/30+3000)/500)*500;var isBroker=Math.random()<0.20;var ownerRate=isBroker?Math.round(trueRate*(1.05+Math.random()*.10)/500)*500:trueRate;ships.push({id:i+1,name:MKT_NAMES[ni],ti:ti,pos:pos,trueOwnerRate:trueRate,ownerRate:ownerRate,isBroker:isBroker,booked:false,rivalBooked:false,colorIdx:nc++});}
     var pool=[];for(var i=0;i<CTPL.length;i++)pool.push(i);pool.sort(function(){return Math.random()-.5;});var cargoes=[];var num=7+Math.floor(Math.random()*3);var now=BASE_DATE.getTime();
     for(var j=0;j<num;j++){var t=CTPL[pool[j]];var qty=Math.round(t.minDWT*(0.85+Math.random()*.3)/5)*5;var rate=Math.round(t.base*(1200/1200)*(0.85+Math.random()*.3));var so=5+Math.floor(Math.random()*16),wn=7+Math.floor(Math.random()*8);cargoes.push({id:j+1,cargo:t.cargo,from:t.from,to:t.to,days:t.days,minDWT:t.minDWT,qty:qty,rate:rate,taken:false,takenBy:null,rivalBooked:false,laycanStartMs:now+so*86400000,laycanEndMs:now+(so+wn)*86400000});}
-    return{bdi:1200,fuelPrice:600,ships:ships,cargoes:cargoes,lastEvent:{type:'none',title:'',desc:''}};
+    var ss={bdi:1200,fuelPrice:600,ships:ships,cargoes:cargoes,lastEvent:{type:'none',title:'',desc:''},weatherEvent:null};return applyWeatherToSharedState(ss);
   },
   init: function(opts){
     S.roomId=opts.roomId;S.myId=opts.myId;S.myName=opts.myName;S.isHost=opts.isHost;S.players=opts.players||{};
@@ -575,7 +698,7 @@ generateSharedState: function(){
     document.getElementById('screen-game').style.display='';
     renderAll();
     addLog('ゲーム開始！ '+S.myName+' さん、頑張ろう！');
-    startTimer();
+    startTimer();spawnUrgentOffer_mp();
     // 他プレイヤーのスコア監視
     db.ref('rooms/'+S.roomId+'/players').on('value',function(snap){S.players=snap.val()||{};renderOppBar();});
     subscribeActions();
@@ -604,7 +727,7 @@ generateSharedState: function(){
     else{// ゲストは新しいsharedStateを受信して適用
       db.ref('rooms/'+S.roomId+'/actions').off();
       var self=this;
-      db.ref('rooms/'+S.roomId+'/sharedState').once('value').then(function(snap){var ss=snap.val();if(!ss)return;S.mktShips=ss.ships.map(function(s){return Object.assign({},s);});S.cargoes=ss.cargoes.map(function(c){return Object.assign({},c,{laycanStart:new Date(c.laycanStartMs),laycanEnd:new Date(c.laycanEndMs)});});S.bdi=ss.bdi;S.fuelPrice=ss.fuelPrice;S.lastEvent=ss.lastEvent;S.selMktShip=null;S.selActiveShip=null;S.selCargo=null;subscribeActions();renderAll();self.showTab('charter');startTimer();addLog('R'+S.round+' 開始！');});
+      db.ref('rooms/'+S.roomId+'/sharedState').once('value').then(function(snap){var ss=snap.val();if(!ss)return;S.mktShips=ss.ships.map(function(s){return Object.assign({},s);});S.cargoes=ss.cargoes.map(function(c){return Object.assign({},c,{laycanStart:new Date(c.laycanStartMs),laycanEnd:new Date(c.laycanEndMs)});});S.bdi=ss.bdi;S.fuelPrice=ss.fuelPrice;S.lastEvent=ss.lastEvent;S.selMktShip=null;S.selActiveShip=null;S.selCargo=null;subscribeActions();renderAll();self.showTab('charter');startTimer();spawnUrgentOffer_mp();addLog('R'+S.round+' 開始！');});
     }
   },
   _showResult:function(){
@@ -632,5 +755,36 @@ generateSharedState: function(){
 function fmt(v){var a=Math.abs(v),s=v<0?'-':'+';if(a>=1e6)return s+'$'+(a/1e6).toFixed(1)+'M';return s+'$'+Math.round(a/1000)+'K';}
 })();
 </script>
+
+<div id="urgent-modal" style="display:none">
+  <div class="urgent-overlay">
+    <div class="urgent-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem">
+        <div style="font-size:15px;font-weight:700;color:#E24B4A">⚡ 緊急オファー！</div>
+        <div id="urgent-timer" style="font-size:22px;font-weight:700;color:#E24B4A;min-width:34px;text-align:right">30</div>
+      </div>
+      <div id="urgent-content" style="font-size:12px;margin-bottom:.75rem;line-height:1.7"></div>
+      <div style="display:flex;gap:.5rem">
+        <button onclick="GAME.acceptUrgent()" class="btn btn-ok" style="flex:1;font-size:13px">承諾する</button>
+        <button onclick="GAME.rejectUrgent()" class="btn" style="flex:1;font-size:13px;color:#888">見送る</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="tut-modal" style="display:none">
+  <div class="tut-overlay-bg">
+    <div class="tut-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem">
+        <div style="font-size:13px;font-weight:600" id="tut-title">チュートリアル</div>
+        <div style="font-size:11px;color:#888" id="tut-progress">1/5</div>
+      </div>
+      <div id="tut-body" style="font-size:12px;line-height:1.75;color:#333;margin-bottom:.85rem"></div>
+      <div style="display:flex;gap:.5rem">
+        <button onclick="GAME.tutNext()" class="btn btn-ok" style="flex:1;font-size:13px" id="tut-next-btn">次へ →</button>
+        <button onclick="GAME.tutSkip()" class="btn" style="font-size:11px;color:#888">スキップ</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
