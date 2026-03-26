@@ -65,7 +65,6 @@ footer a:hover{color:#fff}
 </div>
 
 <!-- ゲーム画面（最初は非表示） -->
-<div id="game-area" style="display:none"></div>
 
 <!-- ランディングページコンテンツ -->
 <div id="lp-content">
@@ -127,10 +126,7 @@ footer a:hover{color:#fff}
 
 <script>
 function startPlay(){
-  document.getElementById('lp-content').style.display='none';
-  document.getElementById('game-area').style.display='';
-  document.getElementById('game-area').innerHTML='<iframe src="game.html" style="width:100%;height:100vh;border:none;display:block" allow="autoplay"></iframe>';
-  window.scrollTo(0,0);
+  window.location.href = 'game.html';
 }
 </script>
 </body>
